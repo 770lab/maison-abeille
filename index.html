@@ -157,6 +157,29 @@
         .editable-cell { cursor: text; border-bottom: 1px dashed transparent; transition: all 0.2s; }
         .editable-cell:hover { border-bottom-color: var(--accent-blue); background: rgba(46,134,222,0.04); }
 
+        /* BLURRED PRICES — default state */
+        body:not(.prix-unlocked) .amt,
+        body:not(.prix-unlocked) .kpi-value,
+        body:not(.prix-unlocked) .pay-line span:last-child,
+        body:not(.prix-unlocked) .doc-stat-value,
+        body:not(.prix-unlocked) .modal-kpi .val,
+        body:not(.prix-unlocked) .rate-badge {
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+            transition: filter 0.4s ease;
+        }
+        body.prix-unlocked .amt,
+        body.prix-unlocked .kpi-value,
+        body.prix-unlocked .pay-line span:last-child,
+        body.prix-unlocked .doc-stat-value,
+        body.prix-unlocked .modal-kpi .val,
+        body.prix-unlocked .rate-badge {
+            filter: none;
+            pointer-events: auto;
+            user-select: auto;
+        }
+
         /* ===== PAGE VIEWS ===== */
         .page { display: none; padding: 28px 40px; max-width: 1560px; margin: 0 auto; }
         .page.active { display: block; }
@@ -578,7 +601,7 @@
         <button class="nav-tab" onclick="showPage('statut', this)" id="statutTabBtn" style="display:none">🔒 Statut / Tarifs</button>
     </div>
     <div class="header-actions">
-        <button class="btn btn-ghost" onclick="promptStatutPassword()" title="Acces Statut / Tarifs">🔐</button>
+        <button class="btn btn-ghost" onclick="promptUnlockPrix()" title="Deverrouiller les prix" id="lockPrixBtn">🔐 Verrouillé</button>
         <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimer</button>
         <button class="btn btn-white" onclick="exportCSV()">⬇ Exporter</button>
     </div>
@@ -1670,25 +1693,41 @@ function showSaveIndicator() {
 renderStatut();
 
 // ============================================================
-//  PASSWORD GATE FOR STATUT TAB
+//  PASSWORD GATE — BLUR PRICES + STATUT TAB
 // ============================================================
-const STATUT_PASSWORD = 'abeille2026';
+const UNLOCK_PASSWORD = 'M@1s0n#Ab3ille!2026$Cfg';
 
-function promptStatutPassword() {
-    const pw = prompt('Mot de passe pour accéder à Statut / Tarifs :');
-    if (pw === STATUT_PASSWORD) {
+function promptUnlockPrix() {
+    // If already unlocked, allow re-locking
+    if (document.body.classList.contains('prix-unlocked')) {
+        document.body.classList.remove('prix-unlocked');
+        document.getElementById('statutTabBtn').style.display = 'none';
+        document.getElementById('lockPrixBtn').innerHTML = '🔐 Verrouillé';
+        sessionStorage.removeItem('prixUnlocked');
+        // If currently on statut page, go back to dashboard
+        if (document.getElementById('page-statut').classList.contains('active')) {
+            showPage('dashboard', document.querySelector('.nav-tab'));
+        }
+        return;
+    }
+    const pw = prompt('🔐 Mot de passe administrateur :');
+    if (pw === UNLOCK_PASSWORD) {
+        document.body.classList.add('prix-unlocked');
         document.getElementById('statutTabBtn').style.display = '';
-        sessionStorage.setItem('statutUnlocked', 'true');
-        alert('✓ Onglet Statut / Tarifs déverrouillé !');
+        document.getElementById('lockPrixBtn').innerHTML = '🔓 Déverrouillé';
+        sessionStorage.setItem('prixUnlocked', 'true');
     } else if (pw !== null) {
         alert('✗ Mot de passe incorrect.');
     }
 }
 
 // Restore unlock state from session
-if (sessionStorage.getItem('statutUnlocked') === 'true') {
+if (sessionStorage.getItem('prixUnlocked') === 'true') {
+    document.body.classList.add('prix-unlocked');
     const stBtn = document.getElementById('statutTabBtn');
     if (stBtn) stBtn.style.display = '';
+    const lockBtn = document.getElementById('lockPrixBtn');
+    if (lockBtn) lockBtn.innerHTML = '🔓 Déverrouillé';
 }
 
 // ============================================================
