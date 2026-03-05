@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison Abeille — Comptabilite Janvier 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@500;600;700&display=swap');
+
+        :root {
+            /* Navy Blue Gradient Palette */
+            --sage: #1B3A5C;
+            --sage-light: #2C5F8A;
+            --sage-lighter: #5B9BD5;
+            --sage-dark: #0F2847;
+            --sage-darker: #091C35;
+            --sage-muted: #3A6B9F;
+            --cream: #EEF3F9;
+            --cream-dark: #D6E2F0;
+            --warm-white: #F5F8FC;
+            --charcoal: #0A1628;
+            --text-primary: #1A2A3E;
+            --text-secondary: #5A6E85;
+            --text-light: #7E90A5;
+            --border: #C8D6E5;
+            --border-light: #DDE7F2;
+            --accent-blue: #2E86DE;
+            --accent-purple: #7C5CBF;
+            --accent-terracotta: #E17055;
+            --accent-gold: #F0B429;
+            --accent-rose: #E84393;
+            --accent-teal: #00B894;
+            --green-pos: #27AE60;
+            --red-neg: #E74C3C;
+            --radius: 14px;
+            --radius-sm: 8px;
+            --shadow: 0 2px 12px rgba(15,40,71,0.08);
+            --shadow-md: 0 4px 20px rgba(15,40,71,0.12);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(180deg, #D6E2F0 0%, #EEF3F9 40%, #F5F8FC 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #091C35 0%, #0F2847 30%, #1B3A5C 60%, #2C5F8A 100%);
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 72px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(9,28,53,0.3);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-circle {
+            width: 44px; height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-circle svg {
+            width: 40px;
+            height: 24px;
+            --fill-0: #FFFFFF;
+        }
+
+        .logo-text h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .logo-text p {
+            color: rgba(255,255,255,0.65);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* NAV TABS */
+        .nav-tabs {
+            display: flex;
+            gap: 2px;
+        }
+
+        .nav-tab {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: rgba(255,255,255,0.65);
+            border: none;
+            background: rgba(255,255,255,0.08);
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-tab.active {
+            background: var(--cream);
+            color: var(--sage-dark);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-white { background: white; color: var(--sage-dark); }
+        .btn-white:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .btn-ghost { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.2); }
+        .btn-sage { background: var(--sage); color: white; }
+        .btn-sage:hover { background: var(--sage-dark); }
+
+        .editable-cell { cursor: text; border-bottom: 1px dashed transparent; transition: all 0.2s; }
+        .editable-cell:hover { border-bottom-color: var(--accent-blue); background: rgba(46,134,222,0.04); }
+
+        /* ===== PAGE VIEWS ===== */
+        .page { display: none; padding: 28px 40px; max-width: 1560px; margin: 0 auto; }
+        .page.active { display: block; }
+
+        /* ===== KPIs ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F5F8FC 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: fadeUp 0.4s ease forwards;
+            box-shadow: 0 2px 8px rgba(15,40,71,0.06);
+        }
+
+        .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+        .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+        .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+        .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+        .kpi-card:nth-child(5) { animation-delay: 0.25s; }
+
+        @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .kpi-card[data-color="sage"]::before { background: var(--sage); }
+        .kpi-card[data-color="blue"]::before { background: var(--accent-blue); }
+        .kpi-card[data-color="purple"]::before { background: var(--accent-purple); }
+        .kpi-card[data-color="green"]::before { background: var(--green-pos); }
+        .kpi-card[data-color="terracotta"]::before { background: var(--accent-terracotta); }
+
+        .kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .kpi-label { font-size: 10px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .kpi-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .kpi-bar { margin-top: 12px; height: 4px; background: var(--cream-dark); border-radius: 2px; overflow: hidden; }
+        .kpi-bar-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 1.5s ease; }
+
+        .kpi-card[data-color="sage"] .kpi-value { color: var(--sage-dark); }
+        .kpi-card[data-color="blue"] .kpi-value { color: var(--accent-blue); }
+        .kpi-card[data-color="purple"] .kpi-value { color: var(--accent-purple); }
+        .kpi-card[data-color="green"] .kpi-value { color: var(--green-pos); }
+        .kpi-card[data-color="terracotta"] .kpi-value { color: var(--accent-terracotta); }
+
+        .kpi-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+        /* ===== SECTION ===== */
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--sage-dark);
+            margin: 28px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before { content:''; width:3px; height:20px; background: var(--sage); border-radius:2px; }
+
+        /* ===== CHARTS GRID ===== */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+        .chart-card { background: linear-gradient(135deg, #FFFFFF 0%, #F5F8FC 100%); border-radius: var(--radius); padding: 22px; border: 1px solid var(--border-light); box-shadow: 0 2px 8px rgba(15,40,71,0.06); }
+        .chart-card h3 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+        .chart-card .sub { font-size: 10px; color: var(--text-light); margin-bottom: 14px; }
+        .chart-card.full { grid-column: 1 / -1; }
+        .chart-container { position: relative; height: 300px; }
+        .chart-container.tall { height: 380px; }
+
+        /* ===== DOCTORS GRID (page 2) ===== */
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .doctor-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px;
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 24px rgba(15,40,71,0.15);
+            border-color: var(--sage-lighter);
+        }
+
+        .doctor-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .doc-avatar {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .doc-info h4 { font-size: 14px; font-weight: 700; }
+        .doc-info span { font-size: 11px; color: var(--text-light); }
+
+        .doc-stats { display: flex; flex-direction: column; gap: 8px; }
+
+        .doc-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .doc-stat-label { color: var(--text-secondary); }
+        .doc-stat-value { font-weight: 700; }
+
+        .doc-bar {
+            height: 4px;
+            background: var(--cream-dark);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .doc-bar-fill { height: 100%; background: var(--sage); border-radius: 2px; transition: width 1s ease; }
+
+        /* ===== DOCTOR DETAIL MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--cream);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+
+        .modal-header {
+            background: linear-gradient(135deg, #0F2847, #1B3A5C, #2C5F8A);
+            padding: 20px 28px;
+            border-radius: var(--radius) var(--radius) 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            color: white;
+            font-size: 22px;
+        }
+
+        .modal-header .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body { padding: 24px 28px; }
+
+        .modal-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .modal-kpi {
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        .modal-kpi .label { font-size: 10px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .modal-kpi .val { font-size: 22px; font-weight: 800; color: var(--sage-dark); margin-top: 4px; }
+
+        .modal-table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-light); }
+        .modal-table thead th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); background: var(--cream); border-bottom: 1px solid var(--border); }
+        .modal-table tbody td { padding: 10px 16px; font-size: 12px; border-bottom: 1px solid var(--border-light); }
+        .modal-table thead th:nth-child(n+3), .modal-table tbody td:nth-child(n+3) { text-align: right; }
+        .modal-table .total-r { background: rgba(90,155,46,0.06); font-weight: 700; }
+
+        /* ===== DETAIL TABLES (dashboard) ===== */
+        .table-card { background: white; border-radius: var(--radius); border: 1px solid var(--border-light); overflow: hidden; margin-bottom: 24px; }
+        .table-card-header { padding: 16px 22px; border-bottom: 1px solid var(--border); background: var(--cream); }
+        .table-card-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 700; color: var(--sage-dark); }
+
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table thead th { padding: 10px 20px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); background: var(--cream); border-bottom: 1px solid var(--border); }
+        .detail-table thead th:nth-child(n+3), .detail-table tbody td:nth-child(n+3) { text-align: right; }
+        .detail-table tbody tr { transition: background 0.15s; }
+        .detail-table tbody tr:hover { background: rgba(90,155,46,0.03); }
+        .detail-table tbody td { padding: 10px 20px; font-size: 12px; border-bottom: 1px solid var(--border-light); }
+        .detail-table .total-r { background: rgba(90,155,46,0.05); }
+        .detail-table .total-r td { font-weight: 700; border-bottom: 2px solid var(--sage-lighter); }
+
+        .doctor-name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .amt { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .pos { color: var(--green-pos); }
+        .neg { color: var(--red-neg); }
+        .rate-badge { padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; background: rgba(27,58,92,0.1); color: var(--sage); }
+        .note-inline { font-size: 10px; color: var(--text-light); font-style: italic; margin-left: 8px; }
+
+        /* ===== EDITABLE TABLE (page 3) ===== */
+        .data-toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            background: white;
+            width: 260px;
+            outline: none;
+        }
+
+        .search-box:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(27,58,92,0.1); }
+
+        .filter-select {
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .edit-table-wrap {
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            overflow-x: auto;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .edit-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        .edit-table thead th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-light);
+            background: var(--cream);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .edit-table tbody td {
+            padding: 6px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border-light);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .edit-table tbody tr:hover { background: rgba(90,155,46,0.04); }
+
+        .edit-table .editable {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            width: 100%;
+            transition: all 0.2s;
+            text-align: right;
+        }
+
+        .edit-table .editable:hover { border-color: var(--border); background: var(--cream); }
+        .edit-table .editable:focus { border-color: var(--sage); background: white; outline: none; box-shadow: 0 0 0 2px rgba(90,155,46,0.15); }
+
+        .edit-table .edited { background: rgba(27,58,92,0.08) !important; border-color: var(--sage-lighter) !important; }
+
+        .cat-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .tag-consult { background: rgba(123,160,196,0.12); color: var(--accent-blue); }
+        .tag-carto { background: rgba(155,141,184,0.12); color: var(--accent-purple); }
+        .tag-etranger { background: rgba(196,169,106,0.12); color: var(--accent-gold); }
+        .tag-laser { background: rgba(196,138,152,0.12); color: var(--accent-rose); }
+        .tag-surgery { background: rgba(27,58,92,0.12); color: var(--sage); }
+        .tag-injection { background: rgba(122,181,168,0.12); color: var(--accent-teal); }
+        .tag-botox { background: rgba(122,181,168,0.12); color: var(--accent-teal); }
+        .tag-esth { background: rgba(196,138,152,0.12); color: var(--accent-rose); }
+        .tag-externe { background: rgba(196,169,106,0.12); color: var(--accent-gold); }
+        .tag-autre { background: rgba(0,0,0,0.05); color: var(--text-secondary); }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--sage);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(80px);
+            transition: transform 0.3s ease;
+            z-index: 300;
+        }
+
+        .save-indicator.show { transform: translateY(0); }
+
+        /* ===== PAYMENT CARD ===== */
+        .payment-card {
+            background: white;
+            border: 2px solid var(--sage-lighter);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .payment-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--sage-dark); margin-bottom: 16px; }
+        .pay-line { display: flex; justify-content: space-between; padding: 10px 14px; background: var(--cream); border-radius: var(--radius-sm); margin-bottom: 8px; font-size: 13px; }
+        .pay-line.total { background: linear-gradient(135deg, #0F2847, #1B3A5C, #2C5F8A); color: white; font-weight: 800; margin-top: 4px; }
+
+        /* ===== FOOTER ===== */
+        .footer { padding: 20px 40px; border-top: 1px solid var(--border); text-align: center; color: var(--text-light); font-size: 10px; letter-spacing: 0.5px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } .charts-grid { grid-template-columns: 1fr; } .main, .header { padding-left: 20px; padding-right: 20px; } }
+        @media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr; } .nav-tabs { display: none; } }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--cream); }
+        ::-webkit-scrollbar-thumb { background: var(--sage-lighter); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo-section">
+        <div class="logo-circle"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 44 26"><g id="Logo"><path clip-rule="evenodd" d="M24.9987 20.7918C25.2177 20.7918 25.3409 21.0437 25.2065 21.2166L21.8509 25.5309C21.8504 25.5316 21.8501 25.5324 21.8501 25.5332V25.5387C21.8501 25.5404 21.8479 25.5412 21.8469 25.5398C21.8461 25.5389 21.8447 25.5389 21.844 25.5398C21.8429 25.5412 21.8407 25.5404 21.8407 25.5387V25.5332C21.8407 25.5324 21.8405 25.5316 21.8399 25.5309L18.4844 21.2166C18.3499 21.0437 18.4731 20.7918 18.6921 20.7918H24.9987Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M27.7437 15.7819C27.889 15.7819 28.0068 15.8997 28.0068 16.0451V17.3633C28.0068 17.4209 27.988 17.4769 27.9531 17.5227L26.953 18.8364C26.9032 18.9018 26.8258 18.9401 26.7436 18.9401H16.9473C16.8651 18.9401 16.7876 18.9018 16.7379 18.8364L15.7378 17.5227C15.7029 17.4769 15.684 17.4209 15.684 17.3633V16.0451C15.684 15.8997 15.8018 15.7819 15.9472 15.7819H27.7437Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M16.9409 5.08287C17.0308 5.23021 16.9569 5.42277 16.7916 5.47216L2.80755 9.64825C2.72724 9.67223 2.64031 9.65653 2.57346 9.60596L0.8277 8.28534C0.72042 8.20418 0.691603 8.05519 0.760885 7.93989L2.58742 4.90006C2.63399 4.82255 2.71709 4.77438 2.80749 4.77248L16.4235 4.48623C16.5172 4.48426 16.6048 4.53225 16.6537 4.61224L16.9409 5.08287ZM2.86131 4.86535C2.77091 4.86725 2.68782 4.91543 2.64125 4.99293L0.884952 7.91587C0.81567 8.03118 0.844487 8.18017 0.951767 8.26132L2.59219 9.50226C2.65903 9.55282 2.74597 9.56853 2.82628 9.54454L16.6478 5.417C16.8132 5.3676 16.887 5.17504 16.7971 5.0277L16.6016 4.70732C16.5528 4.62733 16.4651 4.57933 16.3714 4.5813L2.86131 4.86535Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M18.595 6.82802C18.6689 6.94913 18.6334 7.10701 18.5149 7.18497L7.94402 14.1378C7.84959 14.1999 7.72605 14.1948 7.63708 14.1251L0.184485 8.28634C0.0793206 8.20395 0.0525683 8.05584 0.122264 7.94187L2.45889 4.1207C2.5067 4.0425 2.59176 3.99482 2.68342 3.99482H16.7188C16.8106 3.99482 16.8957 4.04261 16.9435 4.12094L18.595 6.82802ZM0.246112 7.91949C0.176416 8.03346 0.203168 8.18157 0.308333 8.26397L7.64185 14.0094C7.73082 14.0791 7.85437 14.0843 7.94879 14.0222L18.3874 7.15635C18.5059 7.07839 18.5413 6.92051 18.4674 6.79939L16.8907 4.21493C16.8429 4.1366 16.7578 4.08881 16.6661 4.08881H2.73613C2.64447 4.08881 2.55941 4.1365 2.51159 4.2147L0.246112 7.91949Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M40.8834 4.77248C40.9738 4.77438 41.0569 4.82255 41.1034 4.90006L42.93 7.93989C42.9992 8.05519 42.9704 8.20418 42.8632 8.28534L41.1174 9.60596C41.0505 9.65653 40.9636 9.67223 40.8833 9.64825L26.8993 5.47216C26.7339 5.42277 26.66 5.23021 26.75 5.08287L27.0372 4.61224C27.086 4.53225 27.1737 4.48426 27.2674 4.48623L40.8834 4.77248ZM26.8937 5.0277C26.8038 5.17504 26.8777 5.3676 27.0431 5.417L40.8646 9.54454C40.9449 9.56853 41.0318 9.55282 41.0987 9.50226L42.7391 8.26132C42.8464 8.18017 42.8752 8.03118 42.8059 7.91587L41.0496 4.99293C41.003 4.91543 40.9199 4.86725 40.8295 4.86535L27.3195 4.5813C27.2258 4.57933 27.1381 4.62733 27.0893 4.70732L26.8937 5.0277Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M41.0074 3.99482C41.0991 3.99482 41.1841 4.0425 41.232 4.1207L43.5686 7.94187C43.6383 8.05584 43.6115 8.20395 43.5064 8.28634L36.0538 14.1251C35.9648 14.1948 35.8413 14.1999 35.7468 14.1378L25.1759 7.18497C25.0574 7.10701 25.022 6.94913 25.0959 6.82802L26.7474 4.12094C26.7952 4.04261 26.8803 3.99482 26.9721 3.99482H41.0074ZM27.0248 4.08881C26.933 4.08881 26.8479 4.1366 26.8001 4.21493L25.2234 6.79939C25.1496 6.92051 25.185 7.07839 25.3035 7.15635L35.7421 14.0222C35.8365 14.0843 35.96 14.0791 36.049 14.0094L43.3825 8.26397C43.4877 8.18157 43.5144 8.03346 43.4447 7.91949L41.1793 4.2147C41.1314 4.1365 41.0464 4.08881 40.9547 4.08881H27.0248Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M23.6391 7.51966C23.7099 7.51966 23.7777 7.54818 23.8272 7.5988L27.9318 11.7946C27.9799 11.8437 28.0068 11.9098 28.0068 11.9786V13.479C28.0068 13.6243 27.889 13.7422 27.7437 13.7422H15.9472C15.8018 13.7422 15.684 13.6243 15.684 13.479V11.9786C15.684 11.9098 15.7109 11.8437 15.7591 11.7946L19.8636 7.5988C19.9131 7.54818 19.9809 7.51966 20.0518 7.51966H23.6391Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M23.6004 0C23.6975 0 23.7868 0.0535397 23.8325 0.139263L25.4273 3.12727C25.469 3.20543 25.4686 3.29933 25.4262 3.37713L23.8327 6.30145C23.7866 6.38606 23.698 6.43871 23.6016 6.43871H20.0892C19.9929 6.43871 19.9042 6.38605 19.8581 6.30145L18.2646 3.37713C18.2222 3.29933 18.2218 3.20543 18.2635 3.12727L19.8583 0.139263C19.9041 0.0535397 19.9933 0 20.0905 0H23.6004Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M7.64185 14.0094C7.73082 14.0791 7.85437 14.0843 7.94879 14.0222L18.3874 7.15635C18.5059 7.07839 18.5413 6.92051 18.4674 6.79939L16.8907 4.21493C16.8429 4.1366 16.7578 4.08881 16.6661 4.08881H2.73613C2.64447 4.08881 2.55941 4.1365 2.51159 4.2147L0.246112 7.91949C0.176416 8.03346 0.203168 8.18157 0.308333 8.26397L7.64185 14.0094ZM16.7916 5.47216C16.9569 5.42277 17.0308 5.23021 16.9409 5.08287L16.6537 4.61224C16.6048 4.53225 16.5172 4.48426 16.4235 4.48623L2.80749 4.77248C2.71709 4.77438 2.63399 4.82255 2.58742 4.90006L0.760885 7.93989C0.691603 8.05519 0.72042 8.20418 0.8277 8.28534L2.57346 9.60596C2.64031 9.65653 2.72724 9.67223 2.80755 9.64825L16.7916 5.47216Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/><path clip-rule="evenodd" d="M25.2234 6.79939C25.1496 6.92051 25.185 7.07839 25.3035 7.15635L35.7421 14.0222C35.8365 14.0843 35.96 14.0791 36.049 14.0094L43.3825 8.26397C43.4877 8.18157 43.5144 8.03346 43.4447 7.91949L41.1793 4.2147C41.1314 4.1365 41.0464 4.08881 40.9547 4.08881H27.0248C26.933 4.08881 26.8479 4.1366 26.8001 4.21493L25.2234 6.79939ZM41.1034 4.90006C41.0569 4.82255 40.9738 4.77438 40.8834 4.77248L27.2674 4.48623C27.1737 4.48426 27.086 4.53225 27.0372 4.61224L26.75 5.08287C26.66 5.23021 26.7339 5.42277 26.8993 5.47216L40.8833 9.64825C40.9636 9.67223 41.0505 9.65653 41.1174 9.60596L42.8632 8.28534C42.9704 8.20418 42.9992 8.05519 42.93 7.93989L41.1034 4.90006Z" fill="var(--fill-0, #22211C)" fill-rule="evenodd"/></g></svg></div>
+        <div class="logo-text">
+            <h1>Maison Abeille</h1>
+            <p>Medecine Dermo-Esthetique</p>
+        </div>
+    </div>
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showPage('dashboard', this)">📊 Dashboard</button>
+        <button class="nav-tab" onclick="showPage('medecins', this)">👨‍⚕️ Fiches Medecins</button>
+        <button class="nav-tab" onclick="showPage('donnees', this)">📋 Donnees Editables</button>
+        <button class="nav-tab" onclick="showPage('statut', this)" id="statutTabBtn" style="display:none">🔒 Statut / Tarifs</button>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-ghost" onclick="promptStatutPassword()" title="Acces Statut / Tarifs">🔐</button>
+        <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimer</button>
+        <button class="btn btn-white" onclick="exportCSV()">⬇ Exporter</button>
+    </div>
+</header>
+
+<!-- ==================== PAGE 1: DASHBOARD ==================== -->
+<div class="page active" id="page-dashboard">
+
+    <!-- KPI CARDS with icons + progress bars -->
+    <div class="kpi-grid">
+        <div class="kpi-card" data-color="sage">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(27,58,92,0.12)">💰</div><div class="kpi-label">CA Brut Total</div></div>
+            <div class="kpi-value">475 956 &euro;</div>
+            <div class="kpi-sub">Tous medecins confondus</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="100" style="background:linear-gradient(90deg,var(--sage),var(--sage-light))"></div></div>
+        </div>
+        <div class="kpi-card" data-color="blue">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(59,141,212,0.12)">🏥</div><div class="kpi-label">Dermatologues CA</div></div>
+            <div class="kpi-value">124 427 &euro;</div>
+            <div class="kpi-sub">4 praticiens &bull; 26% du CA total</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="26" style="background:linear-gradient(90deg,var(--accent-blue),#6BAFE0)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="purple">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(139,108,196,0.12)">🔪</div><div class="kpi-label">Chirurgiens CA</div></div>
+            <div class="kpi-value">351 528 &euro;</div>
+            <div class="kpi-sub">11 praticiens &bull; 74% du CA total</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="74" style="background:linear-gradient(90deg,var(--accent-purple),#A88AD4)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="green">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(46,155,61,0.12)">💸</div><div class="kpi-label">Total Retrocessions</div></div>
+            <div class="kpi-value">207 211 &euro;</div>
+            <div class="kpi-sub">Part medecins &bull; 43.5% en moyenne</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="43" style="background:linear-gradient(90deg,var(--green-pos),#52C462)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="terracotta">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(212,114,74,0.12)">🏦</div><div class="kpi-label">Marge Centre</div></div>
+            <div class="kpi-value">268 745 &euro;</div>
+            <div class="kpi-sub">Revenu conserve par le centre &bull; 56.5%</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="56" style="background:linear-gradient(90deg,var(--accent-terracotta),#E09070)"></div></div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <h2 class="section-title">Vue d'ensemble</h2>
+    <div class="charts-grid">
+        <div class="chart-card"><h3>Chiffre d'Affaires par Medecin</h3><p class="sub">CA brut — Janvier 2026</p><div class="chart-container tall"><canvas id="chartCA"></canvas></div></div>
+        <div class="chart-card"><h3>Repartition par Type d'Activite</h3><p class="sub">Dermatologues — Toutes categories</p><div class="chart-container"><canvas id="chartPie"></canvas></div></div>
+        <div class="chart-card"><h3>CA Brut vs Retrocession</h3><p class="sub">Comparaison par praticien</p><div class="chart-container tall"><canvas id="chartCompare"></canvas></div></div>
+        <div class="chart-card"><h3>Taux de Retrocession Effectif</h3><p class="sub">% du CA reverse au medecin</p><div class="chart-container"><canvas id="chartRate"></canvas></div></div>
+    </div>
+
+    <!-- NEW: DATA FROM OTHER TABS -->
+    <h2 class="section-title">Analyse Detaillee — Donnees Multi-Onglets</h2>
+    <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+        <div class="kpi-card" data-color="blue">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(46,134,222,0.12)">📋</div><div class="kpi-label">Total Actes</div></div>
+            <div class="kpi-value">1 396</div>
+            <div class="kpi-sub">Dermato: 1 159 + Chirurgiens: 237</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="100" style="background:linear-gradient(90deg,#2E86DE,#5B9BD5)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="sage">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(27,58,92,0.12)">💳</div><div class="kpi-label">Paiements CB</div></div>
+            <div class="kpi-value">229 246 &euro;</div>
+            <div class="kpi-sub">65.2% des encaissements chirurgiens</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="65" style="background:linear-gradient(90deg,var(--sage),var(--sage-light))"></div></div>
+        </div>
+        <div class="kpi-card" data-color="green">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(39,174,96,0.12)">🏦</div><div class="kpi-label">TP / TPMUT</div></div>
+            <div class="kpi-value">33 515 &euro;</div>
+            <div class="kpi-sub">9.5% — Securite Sociale / Mutuelles</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="10" style="background:linear-gradient(90deg,#27AE60,#52C462)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="terracotta">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(225,112,85,0.12)">💵</div><div class="kpi-label">Especes / Cheques</div></div>
+            <div class="kpi-value">88 577 &euro;</div>
+            <div class="kpi-sub">25.2% — inclut chir. externe</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="25" style="background:linear-gradient(90deg,#E17055,#F0A08A)"></div></div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card"><h3>Ventilation Moyens de Paiement</h3><p class="sub">Chirurgiens — CB vs TP/TPMUT vs Especes</p><div class="chart-container"><canvas id="chartPayment"></canvas></div></div>
+        <div class="chart-card"><h3>Nombre d'Actes par Medecin</h3><p class="sub">Dermatologues — Janvier 2026</p><div class="chart-container"><canvas id="chartActes"></canvas></div></div>
+        <div class="chart-card"><h3>Activite Journaliere — Dermatologues</h3><p class="sub">CA brut par jour — Remplacements Dr Assouline</p><div class="chart-container"><canvas id="chartTimeline"></canvas></div></div>
+        <div class="chart-card"><h3>Top Types de Consultation</h3><p class="sub">Dermatologues — par nombre d'actes</p><div class="chart-container"><canvas id="chartConsultTypes"></canvas></div></div>
+    </div>
+
+    <!-- Ventilation par chirurgien -->
+    <h2 class="section-title">Ventilation Paiements Chirurgiens</h2>
+    <div class="table-card">
+        <div class="table-card-header" style="display:flex;justify-content:space-between;align-items:center;"><h3>Encaissements par chirurgien et moyen de paiement — Janvier 2026</h3><button class="btn btn-sage" onclick="addTableRow('ventilation')" style="font-size:0.8rem;">+ Ajouter</button></div>
+        <table class="detail-table" id="tableVentilation">
+            <thead><tr><th>Chirurgien</th><th>CA Total</th><th>💳 CB</th><th>🏦 TP/TPMUT</th><th>💵 Especes</th></tr></thead>
+            <tbody id="bodyVentilation">
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage)">LE</div>Dr Lellouch</div></td><td class="amt">85 926 &euro;</td><td class="amt">4 625 &euro;</td><td class="amt">1 201 &euro;</td><td class="amt">80 100 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-teal)">CH</div>Dr Chrelias</div></td><td class="amt">71 376 &euro;</td><td class="amt">61 940 &euro;</td><td class="amt">7 517 &euro;</td><td class="amt">1 820 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-blue)">KI</div>Dr Kitic</div></td><td class="amt">46 319 &euro;</td><td class="amt">39 488 &euro;</td><td class="amt">6 498 &euro;</td><td class="amt">334 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--red-neg)">RU</div>Dr Ruiz</div></td><td class="amt">32 842 &euro;</td><td class="amt">24 576 &euro;</td><td class="amt">6 198 &euro;</td><td class="amt">2 218 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage-muted)">OU</div>Dr Oubari</div></td><td class="amt">31 435 &euro;</td><td class="amt">28 266 &euro;</td><td class="amt">2 119 &euro;</td><td class="amt">1 050 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--green-pos)">AU</div>Dr Auque</div></td><td class="amt">23 144 &euro;</td><td class="amt">20 442 &euro;</td><td class="amt">1 767 &euro;</td><td class="amt">710 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage-light)">LI</div>Dr Litrico</div></td><td class="amt">20 059 &euro;</td><td class="amt">15 673 &euro;</td><td class="amt">3 727 &euro;</td><td class="amt">640 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-gold)">DI</div>Dr Dibiase</div></td><td class="amt">17 037 &euro;</td><td class="amt">15 147 &euro;</td><td class="amt">1 890 &euro;</td><td class="amt">0 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-purple)">BE</div>Dr Berkane</div></td><td class="amt">9 043 &euro;</td><td class="amt">7 606 &euro;</td><td class="amt">747 &euro;</td><td class="amt">690 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-terracotta)">HA</div>Dr Hadji</div></td><td class="amt">8 615 &euro;</td><td class="amt">6 555 &euro;</td><td class="amt">1 045 &euro;</td><td class="amt">1 015 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-rose)">CA</div>Dr Charles</div></td><td class="amt">5 733 &euro;</td><td class="amt">4 926 &euro;</td><td class="amt">807 &euro;</td><td class="amt">0 &euro;</td></tr>
+                <tr class="total-r"><td><strong>TOTAL</strong></td><td class="amt"><strong>351 528 &euro;</strong></td><td class="amt"><strong>229 246 &euro;</strong></td><td class="amt"><strong>33 515 &euro;</strong></td><td class="amt"><strong>88 577 &euro;</strong></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- DETAILED TABLES -->
+    <h2 class="section-title">Detail Dermatologues</h2>
+    <div class="table-card">
+        <div class="table-card-header" style="display:flex;justify-content:space-between;align-items:center;"><h3>Retrocessions Dermatologues — Remplacements Dr Assouline</h3><button class="btn btn-sage" onclick="addTableRow('dermato')" style="font-size:0.8rem;">+ Ajouter</button></div>
+        <table class="detail-table" id="tableDermato">
+            <thead><tr><th>Medecin</th><th>Categorie</th><th>CA Brut</th><th>Taux</th><th>Retrocession</th></tr></thead>
+            <tbody id="bodyDermato">
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-blue)">AZ</div>Dr Azogui</div></td><td><span class="cat-tag tag-consult">Consultations</span></td><td class="amt">10 741,26 &euro;</td><td><span class="rate-badge">60%</span></td><td class="amt pos">6 444,76 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-blue)">AZ</div>Dr Azogui</div></td><td><span class="cat-tag tag-carto">Cartographie</span></td><td class="amt">668,20 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">200,46 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-blue)">AZ</div>Dr Azogui</div></td><td><span class="cat-tag tag-etranger">Etranger / Air Doctor</span></td><td class="amt">3 300,00 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">990,00 &euro;</td></tr>
+                <tr class="total-r"><td colspan="2"><strong>Dr Azogui — Total</strong></td><td class="amt"><strong>14 709,46 &euro;</strong></td><td></td><td class="amt pos"><strong>7 635,22 &euro;</strong></td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-purple)">HE</div>Dr Hervieu</div></td><td><span class="cat-tag tag-consult">Consultations</span></td><td class="amt">7 782,58 &euro;</td><td><span class="rate-badge">60%</span></td><td class="amt pos">4 669,55 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-purple)">HE</div>Dr Hervieu</div></td><td><span class="cat-tag tag-carto">Cartographie</span></td><td class="amt">3 893,70 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">1 168,11 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-purple)">HE</div>Dr Hervieu</div></td><td><span class="cat-tag tag-laser">Laser</span></td><td class="amt">550,00 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">165,00 &euro;</td></tr>
+                <tr class="total-r"><td colspan="2"><strong>Dr Hervieu — Total</strong></td><td class="amt"><strong>15 476,28 &euro;</strong></td><td></td><td class="amt pos"><strong>6 977,66 &euro;</strong></td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-terracotta)">MO</div>Dr Moreau</div></td><td><span class="cat-tag tag-consult">Consultations</span></td><td class="amt">38 265,36 &euro;</td><td><span class="rate-badge">60%</span></td><td class="amt pos">22 959,22 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-terracotta)">MO</div>Dr Moreau</div></td><td><span class="cat-tag tag-carto">Cartographie</span></td><td class="amt">9 256,10 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">2 776,83 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-terracotta)">MO</div>Dr Moreau</div></td><td><span class="cat-tag tag-etranger">Etranger / Air Doctor</span></td><td class="amt">10 450,00 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">3 135,00 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-terracotta)">MO</div>Dr Moreau</div></td><td><span class="cat-tag tag-laser">Laser</span></td><td class="amt">2 780,00 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">834,00 &euro;</td></tr>
+                <tr class="total-r"><td colspan="2"><strong>Dr Moreau — Total</strong> <span class="note-inline">Rejets: -1 012 &euro; / Reparations: -768 &euro;</span></td><td class="amt"><strong>60 751,46 &euro;</strong></td><td></td><td class="amt pos"><strong>27 924,63 &euro;</strong></td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-rose)">KA</div>Dr Kanelloupoulou</div></td><td><span class="cat-tag tag-consult">Consultations</span></td><td class="amt">12 217,10 &euro;</td><td><span class="rate-badge">50%</span></td><td class="amt pos">6 108,55 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-rose)">KA</div>Dr Kanelloupoulou</div></td><td><span class="cat-tag tag-carto">Cartographie</span></td><td class="amt">20 792,70 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">6 237,81 &euro;</td></tr>
+                <tr class="total-r"><td colspan="2"><strong>Dr Kanelloupoulou — Total</strong> <span class="note-inline">Apres TP/TPMUT: -7 787 &euro;</span></td><td class="amt"><strong>33 489,80 &euro;</strong></td><td></td><td class="amt pos"><strong>4 703,35 &euro;</strong></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="section-title">Detail Chirurgiens</h2>
+    <div class="table-card">
+        <div class="table-card-header" style="display:flex;justify-content:space-between;align-items:center;"><h3>Retrocessions Chirurgiens — Janvier 2026</h3><button class="btn btn-sage" onclick="addTableRow('chirurgiens')" style="font-size:0.8rem;">+ Ajouter</button></div>
+        <table class="detail-table" id="tableChirurgiens">
+            <thead><tr><th>Chirurgien</th><th>Type</th><th>CA Brut</th><th>Taux</th><th>Retrocession</th></tr></thead>
+            <tbody id="bodyChirurgiens">
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage)">LE</div>Dr Lellouch</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">4 976,31 &euro;</td><td><span class="rate-badge">50%</span></td><td class="amt pos">2 488,16 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage)">LE</div>Dr Lellouch</div></td><td><span class="cat-tag tag-botox">Injections (AH/Botox)</span></td><td class="amt">1 100,00 &euro;</td><td><span class="rate-badge">50%*</span></td><td class="amt pos">223,36 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage)">LE</div>Dr Lellouch</div></td><td><span class="cat-tag tag-esth">Esthetique</span></td><td class="amt">350,00 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">105,00 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage)">LE</div>Dr Lellouch</div></td><td><span class="cat-tag tag-externe">Chirurgie Externe</span></td><td class="amt">79 500,00 &euro;</td><td><span class="rate-badge">80%</span></td><td class="amt pos">63 600,00 &euro;</td></tr>
+                <tr class="total-r"><td colspan="2"><strong>Dr Lellouch — Total</strong></td><td class="amt"><strong>85 926,31 &euro;</strong></td><td></td><td class="amt pos"><strong>66 416,52 &euro;</strong></td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-teal)">CH</div>Dr Chrelias</div></td><td><span class="cat-tag tag-surgery">Surgery + Injections</span></td><td class="amt">71 375,77 &euro;</td><td><span class="rate-badge">40%</span></td><td class="amt pos">27 410,51 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--green-pos)">AU</div>Dr Auque</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">23 143,93 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">6 943,18 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-purple)">BE</div>Dr Berkane</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">9 042,70 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">2 712,81 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-rose)">CA</div>Dr Charles</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">5 732,64 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">1 719,79 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-gold)">DI</div>Dr Dibiase</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">17 037,15 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">5 111,15 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-terracotta)">HA</div>Dr Hadji</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">8 614,50 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">2 584,35 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--accent-blue)">KI</div>Dr Kitic</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">46 319,18 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">13 895,75 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage-light)">LI</div>Dr Litrico</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">20 058,86 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">6 017,66 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--sage-muted)">OU</div>Dr Oubari</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">31 435,31 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">9 430,59 &euro;</td></tr>
+                <tr><td><div class="doctor-name"><div class="doc-avatar" style="background:var(--red-neg)">RU</div>Dr Ruiz</div></td><td><span class="cat-tag tag-surgery">Surgery/Consultation</span></td><td class="amt">32 842,12 &euro;</td><td><span class="rate-badge">30%</span></td><td class="amt pos">9 837,64 &euro;</td></tr>
+                <tr class="total-r"><td colspan="2"><strong>TOTAL CHIRURGIENS</strong></td><td class="amt"><strong>351 528,47 &euro;</strong></td><td></td><td class="amt pos"><strong>152 079,95 &euro;</strong></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAYMENT RECAP -->
+    <h2 class="section-title">Recapitulatif Paiement Dr Lellouch</h2>
+    <div class="payment-card">
+        <h3>💳 Montant a verser au Dr Lellouch</h3>
+        <div class="pay-line"><span>4% du CA des remplacants</span><span style="color:var(--green-pos);font-weight:700">10 624,08 &euro;</span></div>
+        <div class="pay-line"><span>Retrocession medecins</span><span style="color:var(--green-pos);font-weight:700">38 542,81 &euro;</span></div>
+        <div class="pay-line"><span>Avance deja versee (23/01/2026)</span><span style="color:var(--red-neg);font-weight:700">-4 000,00 &euro;</span></div>
+        <div class="pay-line total"><span>TOTAL A PAYER</span><span>45 166,89 &euro;</span></div>
+    </div>
+
+    <!-- ===== DR ASSOULINE — Activite propre (Onglet Dr ASSOULINE) ===== -->
+    <h2 class="section-title">Activite Propre Dr Assouline — 94 Actes</h2>
+    <div class="table-card">
+        <div class="table-card-header" style="display:flex;justify-content:space-between;align-items:center;"><h3>Consultations propres Dr Assouline par jour — Janvier 2026</h3><button class="btn btn-sage" onclick="addTableRow('assouline')" style="font-size:0.8rem;">+ Ajouter</button></div>
+        <table class="detail-table" id="tableAssouline">
+            <thead><tr><th>Date</th><th>Nb Actes</th><th>CA TTC</th><th>Part Medecin</th><th>Part Centre</th></tr></thead>
+            <tbody id="bodyAssouline">
+                <tr><td>02 janvier</td><td>2</td><td class="amt">700,00 &euro;</td><td class="amt pos">210,00 &euro;</td><td class="amt">490,00 &euro;</td></tr>
+                <tr><td>05 janvier</td><td>21</td><td class="amt">2 212,32 &euro;</td><td class="amt pos">877,39 &euro;</td><td class="amt">1 334,93 &euro;</td></tr>
+                <tr><td>07 janvier</td><td>13</td><td class="amt">2 783,72 &euro;</td><td class="amt pos">906,31 &euro;</td><td class="amt">1 877,41 &euro;</td></tr>
+                <tr><td>09 janvier</td><td>2</td><td class="amt">94,12 &euro;</td><td class="amt pos">56,47 &euro;</td><td class="amt">37,65 &euro;</td></tr>
+                <tr><td>11 janvier</td><td>1</td><td class="amt">334,10 &euro;</td><td class="amt pos">100,23 &euro;</td><td class="amt">233,87 &euro;</td></tr>
+                <tr><td>12 janvier</td><td>1</td><td class="amt">334,10 &euro;</td><td class="amt pos">100,23 &euro;</td><td class="amt">233,87 &euro;</td></tr>
+                <tr><td>13 janvier</td><td>4</td><td class="amt">178,22 &euro;</td><td class="amt pos">106,93 &euro;</td><td class="amt">71,29 &euro;</td></tr>
+                <tr><td>14 janvier</td><td>11</td><td class="amt">1 355,52 &euro;</td><td class="amt pos">543,31 &euro;</td><td class="amt">812,21 &euro;</td></tr>
+                <tr><td>19 janvier</td><td>8</td><td class="amt">720,00 &euro;</td><td class="amt pos">282,00 &euro;</td><td class="amt">438,00 &euro;</td></tr>
+                <tr><td>20 janvier</td><td>1</td><td class="amt">25,00 &euro;</td><td class="amt pos">15,00 &euro;</td><td class="amt">10,00 &euro;</td></tr>
+                <tr><td>21 janvier</td><td>11</td><td class="amt">1 384,60 &euro;</td><td class="amt pos">580,53 &euro;</td><td class="amt">804,07 &euro;</td></tr>
+                <tr><td>23 janvier</td><td>7</td><td class="amt">2 050,50 &euro;</td><td class="amt pos">649,38 &euro;</td><td class="amt">1 401,12 &euro;</td></tr>
+                <tr><td>27 janvier</td><td>7</td><td class="amt">312,32 &euro;</td><td class="amt pos">187,39 &euro;</td><td class="amt">124,93 &euro;</td></tr>
+                <tr><td>28 janvier</td><td>4</td><td class="amt">240,00 &euro;</td><td class="amt pos">144,00 &euro;</td><td class="amt">96,00 &euro;</td></tr>
+                <tr><td>30 janvier</td><td>1</td><td class="amt">69,12 &euro;</td><td class="amt pos">41,47 &euro;</td><td class="amt">27,65 &euro;</td></tr>
+                <tr class="total-r"><td><strong>TOTAL Dr Assouline</strong></td><td><strong>94</strong></td><td class="amt"><strong>12 793,64 &euro;</strong></td><td class="amt pos"><strong>4 800,65 &euro;</strong></td><td class="amt"><strong>7 992,99 &euro;</strong></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== DR KANELLOPOULOU — Activite jour par jour (Onglet Résumé Dr ASSOULINE) ===== -->
+    <h2 class="section-title">Dr Kanellopoulou — Activite par Jour (237 Actes)</h2>
+    <div class="table-card">
+        <div class="table-card-header" style="display:flex;justify-content:space-between;align-items:center;"><h3>Dermatologue titulaire — Consultations jour par jour</h3><button class="btn btn-sage" onclick="addTableRow('kanellopoulou')" style="font-size:0.8rem;">+ Ajouter</button></div>
+        <table class="detail-table" id="tableKanellopoulou">
+            <thead><tr><th>Date</th><th>Nb Actes</th><th>CA TTC</th><th>Part Medecin</th><th>Part Centre</th></tr></thead>
+            <tbody id="bodyKanellopoulou">
+                <tr><td>14 janvier</td><td>52</td><td class="amt">5 859,70 &euro;</td><td class="amt pos">2 390,57 &euro;</td><td class="amt">3 469,13 &euro;</td></tr>
+                <tr><td>15 janvier</td><td>44</td><td class="amt">5 913,30 &euro;</td><td class="amt pos">2 220,09 &euro;</td><td class="amt">3 693,21 &euro;</td></tr>
+                <tr><td>16 janvier</td><td>52</td><td class="amt">6 347,30 &euro;</td><td class="amt pos">2 457,91 &euro;</td><td class="amt">3 889,39 &euro;</td></tr>
+                <tr><td>17 janvier</td><td>68</td><td class="amt">9 234,00 &euro;</td><td class="amt pos">3 485,52 &euro;</td><td class="amt">5 748,48 &euro;</td></tr>
+                <tr><td>30 janvier</td><td>21</td><td class="amt">6 135,50 &euro;</td><td class="amt pos">1 936,27 &euro;</td><td class="amt">4 199,23 &euro;</td></tr>
+                <tr class="total-r"><td><strong>TOTAL Kanellopoulou</strong></td><td><strong>237</strong></td><td class="amt"><strong>33 489,80 &euro;</strong></td><td class="amt pos"><strong>12 490,36 &euro;</strong></td><td class="amt"><strong>20 999,44 &euro;</strong></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== LASER — Detail des traitements (Onglet LASER) ===== -->
+    <h2 class="section-title">Traitements LASER — Janvier 2026</h2>
+    <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 16px;">
+        <div class="kpi-card" data-color="blue">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(46,134,222,0.12)">⚡</div><div class="kpi-label">Seances LASER</div></div>
+            <div class="kpi-value">40</div>
+            <div class="kpi-sub">Dont forfaits deja regles</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="100" style="background:linear-gradient(90deg,#2E86DE,#5B9BD5)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="purple">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(124,92,191,0.12)">💰</div><div class="kpi-label">CA LASER</div></div>
+            <div class="kpi-value">5 062 &euro;</div>
+            <div class="kpi-sub">Revenu centre sur LASER</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="40" style="background:linear-gradient(90deg,#7C5CBF,#A88AD4)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="terracotta">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(225,112,85,0.12)">🔬</div><div class="kpi-label">Types Laser</div></div>
+            <div class="kpi-value">ALEX / YAG</div>
+            <div class="kpi-sub">ALEX II, ALEX III, YAG — Epilation</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="70" style="background:linear-gradient(90deg,#E17055,#F0A08A)"></div></div>
+        </div>
+    </div>
+
+    <!-- Synthese globale multi-onglets -->
+    <h2 class="section-title">Synthese Globale — Tous Onglets</h2>
+    <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 16px;">
+        <div class="kpi-card" data-color="sage">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(27,58,92,0.12)">👨‍⚕️</div><div class="kpi-label">Remplacants Dermato (MG)</div></div>
+            <div class="kpi-value">103 731 &euro;</div>
+            <div class="kpi-sub">Retro: 49 119 &euro; &bull; Centre: 54 612 &euro;</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="47" style="background:linear-gradient(90deg,var(--sage),var(--sage-light))"></div></div>
+        </div>
+        <div class="kpi-card" data-color="purple">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(124,92,191,0.12)">👩‍⚕️</div><div class="kpi-label">Dermatologue (Kanellopoulou)</div></div>
+            <div class="kpi-value">33 490 &euro;</div>
+            <div class="kpi-sub">Retro: 12 490 &euro; &bull; Centre: 20 999 &euro;</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="37" style="background:linear-gradient(90deg,#7C5CBF,#A88AD4)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="blue">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(46,134,222,0.12)">⚡</div><div class="kpi-label">LASER (Centre)</div></div>
+            <div class="kpi-value">5 062 &euro;</div>
+            <div class="kpi-sub">40 seances &bull; 100% centre</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="100" style="background:linear-gradient(90deg,#2E86DE,#5B9BD5)"></div></div>
+        </div>
+        <div class="kpi-card" data-color="green">
+            <div class="kpi-header"><div class="kpi-icon" style="background:rgba(39,174,96,0.12)">🏥</div><div class="kpi-label">Dr Assouline (propre)</div></div>
+            <div class="kpi-value">12 794 &euro;</div>
+            <div class="kpi-sub">94 actes &bull; Centre: 7 993 &euro;</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" data-width="60" style="background:linear-gradient(90deg,#27AE60,#52C462)"></div></div>
+        </div>
+    </div>
+    <div class="charts-grid" style="grid-template-columns: 1fr;">
+        <div class="chart-card"><h3>Vue Consolidee — Revenus du Centre par Source</h3><p class="sub">Toutes sources de revenus — Janvier 2026</p><div class="chart-container"><canvas id="chartConsolidated"></canvas></div></div>
+    </div>
+
+</div>
+
+<!-- ==================== PAGE 2: FICHES MEDECINS ==================== -->
+<div class="page" id="page-medecins">
+    <h2 class="section-title">Fiches Medecins — Cliquez pour voir le detail</h2>
+    <div class="doctors-grid" id="doctorsGrid"></div>
+</div>
+
+<!-- ==================== PAGE 3: DONNEES EDITABLES ==================== -->
+<div class="page" id="page-donnees">
+    <h2 class="section-title">Donnees Editables — Modifiez directement les cellules</h2>
+    <div class="data-toolbar">
+        <input type="text" class="search-box" placeholder="🔍 Rechercher un medecin, un acte..." id="searchBox" oninput="filterData()">
+        <select class="filter-select" id="filterDoctor" onchange="filterData()">
+            <option value="">Tous les medecins</option>
+        </select>
+        <select class="filter-select" id="filterCat" onchange="filterData()">
+            <option value="">Toutes categories</option>
+            <option value="Consultation">Consultations</option>
+            <option value="Cartographie">Cartographie</option>
+            <option value="Etranger">Etranger / Air Doctor</option>
+            <option value="Laser">Laser</option>
+            <option value="Surgery">Surgery</option>
+            <option value="Injection">Injections</option>
+            <option value="Botox">Botox</option>
+            <option value="Esthetique">Esthetique</option>
+            <option value="Externe">Chirurgie Externe</option>
+        </select>
+        <button class="btn btn-sage" onclick="resetData()" style="margin-left:auto">↺ Reinitialiser</button>
+        <button class="btn btn-sage" onclick="addRow()">+ Ajouter ligne</button>
+    </div>
+    <div class="edit-table-wrap">
+        <table class="edit-table" id="editTable">
+            <thead>
+                <tr>
+                    <th>Medecin</th>
+                    <th>Reglement</th>
+                    <th>Acte</th>
+                    <th>Prix TTC</th>
+                    <th>Prix HT</th>
+                    <th>Taux Retro</th>
+                    <th>Part Medecin</th>
+                    <th>Part Centre</th>
+                    <th>Notes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="editBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ===== DOCTOR DETAIL MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Dr ...</h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<!-- ==================== PAGE 4: STATUT / TARIFS ==================== -->
+<div class="page" id="page-statut">
+    <h2 class="section-title">Grille Tarifaire Compl&egrave;te — Onglet Statut</h2>
+    <p style="color:var(--text-secondary);margin-bottom:20px;font-size:0.9rem;">Simulateur de r&eacute;trocession — Remplissez Prix TTC, TP, TPMUT et Taux, les colonnes calcul&eacute;es se remplissent automatiquement.</p>
+
+    <!-- FORMULAIRE AJOUT NOUVELLE LIGNE -->
+    <div class="table-card" style="margin-bottom:24px;border-left:4px solid var(--accent-blue);">
+        <div class="table-card-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <h3>&#10133; Ajouter un nouvel acte</h3>
+            <button class="btn btn-sage" onclick="addStatutRow()" style="font-size:0.85rem;">Calculer &amp; Ajouter</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:4px 0;">
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">Acte *</label><input type="text" id="st_acte" class="search-box" style="width:100%;padding:8px 10px;" placeholder="Ex: Consultation APC 100"></div>
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">CCAM</label><input type="text" id="st_ccam" class="search-box" style="width:100%;padding:8px 10px;" placeholder="Ex: APC, CS"></div>
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">Prix TTC * (&euro;)</label><input type="number" id="st_ttc" class="search-box" style="width:100%;padding:8px 10px;" step="0.01" placeholder="100.00" oninput="autoCalcStatut()"></div>
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">TVA ? (20%)</label><select id="st_tva" class="filter-select" style="width:100%;padding:8px 10px;" onchange="autoCalcStatut()"><option value="no">Non (HT=TTC)</option><option value="yes">Oui (HT=TTC/1.2)</option></select></div>
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">Taux R&eacute;tro Centre *</label><select id="st_taux" class="filter-select" style="width:100%;padding:8px 10px;" onchange="autoCalcStatut()"><option value="0.30">30%</option><option value="0.50">50%</option><option value="0.10">10%</option><option value="0.80">80%</option><option value="0.60">60%</option><option value="0.40">40%</option></select></div>
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">Montant TP (&euro;)</label><input type="number" id="st_tp" class="search-box" style="width:100%;padding:8px 10px;" step="0.01" placeholder="42.00" oninput="autoCalcStatut()"></div>
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">Montant TPMUT (&euro;)</label><input type="number" id="st_tpmut" class="search-box" style="width:100%;padding:8px 10px;" step="0.01" placeholder="60.00" oninput="autoCalcStatut()"></div>
+            <div><label style="font-size:0.7rem;text-transform:uppercase;color:var(--text-light);font-weight:600;">Prix Produit (&euro;)</label><input type="number" id="st_produit" class="search-box" style="width:100%;padding:8px 10px;" step="0.01" placeholder="0.00"></div>
+        </div>
+        <!-- Apercu calcul en temps reel -->
+        <div id="statutPreview" style="margin-top:12px;padding:12px 16px;background:rgba(27,58,92,0.04);border-radius:8px;font-size:0.82rem;display:none;">
+            <strong>Aper&ccedil;u calcul&eacute; :</strong>
+            <span id="prevHT" style="margin-left:16px;">Prix HT: —</span>
+            <span id="prevRetroTP" style="margin-left:16px;">R&eacute;tro si TP: —</span>
+            <span id="prevRetroTPMUT" style="margin-left:16px;">R&eacute;tro si TPMUT: —</span>
+            <span id="prevCentre" style="margin-left:16px;">Total Centre: —</span>
+            <span id="prevMed" style="margin-left:16px;">Total M&eacute;decin: —</span>
+        </div>
+    </div>
+
+    <!-- TABLE STATUT COMPLETE -->
+    <div class="table-card">
+        <div class="table-card-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <h3>Tarifs de r&eacute;f&eacute;rence — Onglet Statut principal (<span id="statutRowCount">50</span> lignes)</h3>
+            <input type="text" class="search-box" id="statutSearch" placeholder="&#128269; Filtrer les actes..." oninput="filterStatut()" style="max-width:260px;padding:8px 12px;">
+        </div>
+        <div style="overflow-x:auto;">
+        <table class="detail-table" style="font-size:0.8rem;" id="statutTable">
+            <thead><tr>
+                <th>Acte</th>
+                <th>CCAM</th>
+                <th>Prix TTC</th>
+                <th>Prix HT</th>
+                <th>Taux</th>
+                <th>TP</th>
+                <th>TPMUT</th>
+                <th>R&eacute;tro si TP</th>
+                <th>R&eacute;tro si TPMUT</th>
+                <th>Total Centre</th>
+                <th>Total M&eacute;decin</th>
+                <th>Prix Produit</th>
+                <th></th>
+            </tr></thead>
+            <tbody id="statutBody"></tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+<!-- SAVE INDICATOR -->
+<div class="save-indicator" id="saveIndicator">✓ Modifications sauvegardees</div>
+
+<footer class="footer">Maison Abeille — Medecine Dermo-Esthetique &bull; Janvier 2026 &bull; Confidentiel</footer>
+
+<script>
+// ============================================================
+//  DATA — All raw transaction data from the spreadsheet
+// ============================================================
+const DEFAULT_DATA = [
+    // DERMATOLOGUES
+    { doctor:"Dr Azogui", reglement:"CB", acte:"Consultations", prixTTC:10741.26, prixHT:10741.26, taux:0.60, partMed:6444.76, partCentre:4296.50, notes:"", cat:"Consultation", type:"Dermato" },
+    { doctor:"Dr Azogui", reglement:"CB", acte:"Cartographie", prixTTC:668.20, prixHT:668.20, taux:0.30, partMed:200.46, partCentre:467.74, notes:"", cat:"Cartographie", type:"Dermato" },
+    { doctor:"Dr Azogui", reglement:"CB", acte:"Etranger / Air Doctor", prixTTC:3300.00, prixHT:3300.00, taux:0.30, partMed:990.00, partCentre:2310.00, notes:"", cat:"Etranger", type:"Dermato" },
+    { doctor:"Dr Azogui", reglement:"CB", acte:"Laser", prixTTC:0, prixHT:0, taux:0.30, partMed:0, partCentre:0, notes:"", cat:"Laser", type:"Dermato" },
+
+    { doctor:"Dr Hervieu", reglement:"CB", acte:"Consultations", prixTTC:7782.58, prixHT:7782.58, taux:0.60, partMed:4669.55, partCentre:3113.03, notes:"", cat:"Consultation", type:"Dermato" },
+    { doctor:"Dr Hervieu", reglement:"CB", acte:"Cartographie", prixTTC:3893.70, prixHT:3893.70, taux:0.30, partMed:1168.11, partCentre:2725.59, notes:"", cat:"Cartographie", type:"Dermato" },
+    { doctor:"Dr Hervieu", reglement:"CB", acte:"Etranger / Air Doctor", prixTTC:3250.00, prixHT:3250.00, taux:0.30, partMed:975.00, partCentre:2275.00, notes:"", cat:"Etranger", type:"Dermato" },
+    { doctor:"Dr Hervieu", reglement:"CB", acte:"Laser", prixTTC:550.00, prixHT:550.00, taux:0.30, partMed:165.00, partCentre:385.00, notes:"", cat:"Laser", type:"Dermato" },
+
+    { doctor:"Dr Moreau", reglement:"CB", acte:"Consultations", prixTTC:38265.36, prixHT:38265.36, taux:0.60, partMed:22959.22, partCentre:15306.14, notes:"", cat:"Consultation", type:"Dermato" },
+    { doctor:"Dr Moreau", reglement:"CB", acte:"Cartographie", prixTTC:9256.10, prixHT:9256.10, taux:0.30, partMed:2776.83, partCentre:6479.27, notes:"", cat:"Cartographie", type:"Dermato" },
+    { doctor:"Dr Moreau", reglement:"CB", acte:"Etranger / Air Doctor", prixTTC:10450.00, prixHT:10450.00, taux:0.30, partMed:3135.00, partCentre:7315.00, notes:"", cat:"Etranger", type:"Dermato" },
+    { doctor:"Dr Moreau", reglement:"CB", acte:"Laser", prixTTC:2780.00, prixHT:2780.00, taux:0.30, partMed:834.00, partCentre:1946.00, notes:"", cat:"Laser", type:"Dermato" },
+    { doctor:"Dr Moreau", reglement:"", acte:"Rejets annee", prixTTC:0, prixHT:0, taux:0, partMed:-1012.42, partCentre:1012.42, notes:"Rejets a calculer", cat:"Autre", type:"Dermato" },
+    { doctor:"Dr Moreau", reglement:"", acte:"Reparations FotoFinder", prixTTC:0, prixHT:0, taux:0, partMed:-768.00, partCentre:768.00, notes:"Reparation materiel", cat:"Autre", type:"Dermato" },
+
+    { doctor:"Dr Kanelloupoulou", reglement:"CB", acte:"Consultations", prixTTC:12217.10, prixHT:12217.10, taux:0.50, partMed:6108.55, partCentre:6108.55, notes:"Taux 50% (dermatologue)", cat:"Consultation", type:"Dermato" },
+    { doctor:"Dr Kanelloupoulou", reglement:"CB", acte:"Cartographie", prixTTC:20792.70, prixHT:20792.70, taux:0.30, partMed:6237.81, partCentre:14554.89, notes:"", cat:"Cartographie", type:"Dermato" },
+    { doctor:"Dr Kanelloupoulou", reglement:"CB", acte:"Etranger / Air Doctor", prixTTC:0, prixHT:0, taux:0.30, partMed:0, partCentre:0, notes:"", cat:"Etranger", type:"Dermato" },
+    { doctor:"Dr Kanelloupoulou", reglement:"CB", acte:"Laser", prixTTC:480.00, prixHT:480.00, taux:0.30, partMed:144.00, partCentre:336.00, notes:"", cat:"Laser", type:"Dermato" },
+    { doctor:"Dr Kanelloupoulou", reglement:"TP/TPMUT", acte:"Deduction TP/TPMUT", prixTTC:0, prixHT:0, taux:0, partMed:-7787.01, partCentre:7787.01, notes:"Verse directement par Secu", cat:"Autre", type:"Dermato" },
+
+    // CHIRURGIENS
+    { doctor:"Dr Lellouch", reglement:"CB", acte:"Surgery/Consultation", prixTTC:4976.31, prixHT:4976.31, taux:0.50, partMed:2488.16, partCentre:2488.15, notes:"", cat:"Surgery", type:"Chirurgien" },
+    { doctor:"Dr Lellouch", reglement:"CB", acte:"Injections (AH/Botox)", prixTTC:1100.00, prixHT:1100.00, taux:0.50, partMed:223.36, partCentre:876.64, notes:"50% less TVA, prix produit", cat:"Injection", type:"Chirurgien" },
+    { doctor:"Dr Lellouch", reglement:"CB", acte:"Esthetique (PRX/HIFU/Microneedling)", prixTTC:350.00, prixHT:350.00, taux:0.30, partMed:105.00, partCentre:245.00, notes:"", cat:"Esthetique", type:"Chirurgien" },
+    { doctor:"Dr Lellouch", reglement:"Virement", acte:"Chirurgie Externe", prixTTC:79500.00, prixHT:79500.00, taux:0.80, partMed:63600.00, partCentre:15900.00, notes:"Paye via virement medecin", cat:"Externe", type:"Chirurgien" },
+
+    { doctor:"Dr Chrelias", reglement:"CB", acte:"Surgery/Consultation", prixTTC:70875.77, prixHT:70875.77, taux:0.40, partMed:28350.31, partCentre:42525.46, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Chrelias", reglement:"CB", acte:"Injections (AH/Botox)", prixTTC:500.00, prixHT:500.00, taux:0.40, partMed:129.07, partCentre:370.93, notes:"40% less TVA, prix produit", cat:"Injection", type:"Remplacant" },
+    { doctor:"Dr Chrelias", reglement:"", acte:"Deduction usage personnel", prixTTC:0, prixHT:0, taux:0, partMed:-939.80, partCentre:939.80, notes:"10 botox + TVA", cat:"Autre", type:"Remplacant" },
+
+    { doctor:"Dr Auque", reglement:"CB", acte:"Surgery/Consultation", prixTTC:23143.93, prixHT:23143.93, taux:0.30, partMed:6943.18, partCentre:16200.75, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Berkane", reglement:"CB", acte:"Surgery/Consultation", prixTTC:9042.70, prixHT:9042.70, taux:0.30, partMed:2712.81, partCentre:6329.89, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Charles", reglement:"CB", acte:"Surgery/Consultation", prixTTC:5732.64, prixHT:5732.64, taux:0.30, partMed:1719.79, partCentre:4012.85, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Dibiase", reglement:"CB", acte:"Surgery/Consultation", prixTTC:17037.15, prixHT:17037.15, taux:0.30, partMed:5111.15, partCentre:11926.00, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Hadji", reglement:"CB", acte:"Surgery/Consultation", prixTTC:8614.50, prixHT:8614.50, taux:0.30, partMed:2584.35, partCentre:6030.15, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Kitic", reglement:"CB", acte:"Surgery/Consultation", prixTTC:46319.18, prixHT:46319.18, taux:0.30, partMed:13895.75, partCentre:32423.43, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Litrico", reglement:"CB", acte:"Surgery/Consultation", prixTTC:20058.86, prixHT:20058.86, taux:0.30, partMed:6017.66, partCentre:14041.20, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Oubari", reglement:"CB", acte:"Surgery/Consultation", prixTTC:31435.31, prixHT:31435.31, taux:0.30, partMed:9430.59, partCentre:22004.72, notes:"", cat:"Surgery", type:"Remplacant" },
+    { doctor:"Dr Ruiz", reglement:"CB", acte:"Surgery/Consultation", prixTTC:32842.12, prixHT:32842.12, taux:0.30, partMed:9837.64, partCentre:23004.48, notes:"", cat:"Surgery", type:"Remplacant" },
+
+    // DR ASSOULINE — Activite propre (onglet Dr ASSOULINE)
+    { doctor:"Dr Assouline", reglement:"CB", acte:"Consultations propres", prixTTC:12793.64, prixHT:12793.64, taux:0.375, partMed:4800.65, partCentre:7992.99, notes:"94 actes en janvier", cat:"Consultation", type:"Dermato" },
+
+    // LASER — Revenus centre (onglet LASER)
+    { doctor:"Centre", reglement:"CB", acte:"LASER Epilation (40 seances)", prixTTC:5062.00, prixHT:5062.00, taux:0, partMed:0, partCentre:5062.00, notes:"ALEX II/III, YAG — Jan 2026", cat:"Laser", type:"Centre" },
+
+    // Additional acts from the detailed spreadsheet
+    { doctor:"Dr Assouline", reglement:"CB", acte:"Consultation APC 100", prixTTC:100.00, prixHT:100.00, taux:0.30, partMed:42.00, partCentre:50.00, notes:"Ref: Statut Assouline", cat:"Consultation", type:"Dermato" },
+    { doctor:"Dr Deltonne", reglement:"CB", acte:"Meso cheveux", prixTTC:250.00, prixHT:208.33, taux:0.30, partMed:0, partCentre:135.00, notes:"Prix produit 20e", cat:"Esthetique", type:"Dermato" },
+    { doctor:"Dr Deltonne", reglement:"CB", acte:"Meso cheveux Kenacort 100%", prixTTC:62.70, prixHT:52.25, taux:0.30, partMed:0, partCentre:41.35, notes:"", cat:"Esthetique", type:"Dermato" },
+    { doctor:"Dr Slimani", reglement:"TP", acte:"Chir Dermato KYSTE FACE", prixTTC:550.00, prixHT:550.00, taux:0.30, partMed:0, partCentre:275.00, notes:"KYSTE VISAGE 214.97", cat:"Surgery", type:"Dermato" },
+    { doctor:"Dr Ilyes", reglement:"CB", acte:"Drainage", prixTTC:400.00, prixHT:400.00, taux:0.30, partMed:0, partCentre:85.00, notes:"", cat:"Autre", type:"Dermato" },
+    { doctor:"Centre", reglement:"CB", acte:"Botox BRUXISME", prixTTC:500.00, prixHT:416.67, taux:0, partMed:0, partCentre:161.34, notes:"TVA applicable", cat:"Botox", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"Botox TRANSPIRATION 2 flacons", prixTTC:650.00, prixHT:541.67, taux:0, partMed:0, partCentre:176.85, notes:"TVA applicable", cat:"Botox", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"Botox SOURIRE GINGIVAL", prixTTC:600.00, prixHT:500.00, taux:0, partMed:0, partCentre:203.01, notes:"TVA applicable", cat:"Botox", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"Botox LIFTING", prixTTC:650.00, prixHT:541.67, taux:0, partMed:0, partCentre:223.84, notes:"TVA applicable", cat:"Botox", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"AH (Acide Hyaluronique)", prixTTC:400.00, prixHT:333.33, taux:0, partMed:0, partCentre:155.58, notes:"TVA applicable", cat:"Injection", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"LASER", prixTTC:150.00, prixHT:125.00, taux:0, partMed:0, partCentre:45.00, notes:"", cat:"Laser", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"HIFU", prixTTC:600.00, prixHT:0, taux:0.10, partMed:0, partCentre:420.00, notes:"", cat:"Esthetique", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"PRX T33", prixTTC:250.00, prixHT:0, taux:0.10, partMed:0, partCentre:115.00, notes:"", cat:"Esthetique", type:"Centre" },
+    { doctor:"Centre", reglement:"CB", acte:"Microneedling", prixTTC:330.00, prixHT:0, taux:0.10, partMed:0, partCentre:0, notes:"", cat:"Esthetique", type:"Centre" },
+];
+
+let data = JSON.parse(localStorage.getItem('maisonAbeilleData')) || JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+const fmt = v => new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR', maximumFractionDigits:2 }).format(v);
+const fmt0 = v => new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(v);
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+function showPage(page, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    btn.classList.add('active');
+    if (page === 'medecins') renderDoctorCards();
+    if (page === 'donnees') renderEditTable();
+    if (page === 'statut') renderStatut();
+    window.scrollTo(0, 0);
+}
+
+// ============================================================
+//  PAGE 2: DOCTOR CARDS
+// ============================================================
+function getDoctorSummaries() {
+    const docs = {};
+    data.forEach(row => {
+        if (!docs[row.doctor]) docs[row.doctor] = { ca: 0, retro: 0, rows: [], type: row.type };
+        docs[row.doctor].ca += row.prixTTC;
+        docs[row.doctor].retro += row.partMed;
+        docs[row.doctor].rows.push(row);
+    });
+    return docs;
+}
+
+const avatarColors = ['#1B3A5C','#2E86DE','#7C5CBF','#E17055','#F0B429','#00B894','#E84393','#2C5F8A','#27AE60','#0F2847','#3A6B9F','#5B9BD5','#48C9B0','#8E44AD','#F39C12'];
+
+function renderDoctorCards() {
+    const grid = document.getElementById('doctorsGrid');
+    const docs = getDoctorSummaries();
+    const maxCA = Math.max(...Object.values(docs).map(d => d.ca));
+    let html = '';
+    let i = 0;
+    const sorted = Object.entries(docs).sort((a,b) => b[1].ca - a[1].ca);
+    sorted.forEach(([name, d]) => {
+        const initials = name.replace('Dr ','').replace('Centre','CT').substring(0,2).toUpperCase();
+        const col = avatarColors[i % avatarColors.length];
+        const pct = maxCA > 0 ? (d.ca / maxCA * 100) : 0;
+        const rate = d.ca > 0 ? (d.retro / d.ca * 100).toFixed(1) : '0.0';
+        html += `<div class="doctor-card" onclick="openDoctor('${name}')">
+            <div class="doctor-card-header">
+                <div class="doc-avatar" style="background:${col}">${initials}</div>
+                <div class="doc-info"><h4>${name}</h4><span>${d.type} &bull; ${d.rows.length} lignes</span></div>
+            </div>
+            <div class="doc-stats">
+                <div class="doc-stat-row"><span class="doc-stat-label">CA Brut</span><span class="doc-stat-value">${fmt0(d.ca)}</span></div>
+                <div class="doc-stat-row"><span class="doc-stat-label">Retrocession</span><span class="doc-stat-value" style="color:var(--green-pos)">${fmt0(d.retro)}</span></div>
+                <div class="doc-stat-row"><span class="doc-stat-label">Taux effectif</span><span class="doc-stat-value">${rate}%</span></div>
+                <div class="doc-bar"><div class="doc-bar-fill" style="width:${pct}%"></div></div>
+            </div>
+        </div>`;
+        i++;
+    });
+    grid.innerHTML = html;
+}
+
+// ============================================================
+//  DOCTOR DETAIL MODAL
+// ============================================================
+function openDoctor(name) {
+    const docs = getDoctorSummaries();
+    const d = docs[name];
+    if (!d) return;
+    document.getElementById('modalTitle').textContent = name + ' — Detail Janvier 2026';
+    const totalCA = d.ca;
+    const totalRetro = d.retro;
+    const totalCentre = d.rows.reduce((a,r) => a + r.partCentre, 0);
+    const rate = totalCA > 0 ? (totalRetro / totalCA * 100).toFixed(1) : '0.0';
+
+    let html = `<div class="modal-kpis">
+        <div class="modal-kpi"><div class="label">CA Brut</div><div class="val">${fmt(totalCA)}</div></div>
+        <div class="modal-kpi"><div class="label">Retrocession</div><div class="val" style="color:var(--green-pos)">${fmt(totalRetro)}</div></div>
+        <div class="modal-kpi"><div class="label">Taux Effectif</div><div class="val">${rate}%</div></div>
+    </div>
+    <table class="modal-table"><thead><tr><th>Acte</th><th>Reglement</th><th>Prix TTC</th><th>Taux</th><th>Part Medecin</th><th>Part Centre</th><th>Notes</th></tr></thead><tbody>`;
+
+    d.rows.forEach(r => {
+        html += `<tr>
+            <td><span class="cat-tag tag-${r.cat.toLowerCase().replace('/','').substring(0,6)}">${r.acte}</span></td>
+            <td>${r.reglement}</td>
+            <td>${fmt(r.prixTTC)}</td>
+            <td>${r.taux > 0 ? (r.taux*100)+'%' : '-'}</td>
+            <td style="color:${r.partMed >= 0 ? 'var(--green-pos)' : 'var(--red-neg)'};font-weight:600">${fmt(r.partMed)}</td>
+            <td>${fmt(r.partCentre)}</td>
+            <td style="font-size:10px;color:var(--text-light)">${r.notes}</td>
+        </tr>`;
+    });
+
+    html += `<tr class="total-r"><td><strong>TOTAL</strong></td><td></td><td><strong>${fmt(totalCA)}</strong></td><td></td><td style="color:var(--green-pos)"><strong>${fmt(totalRetro)}</strong></td><td><strong>${fmt(totalCentre)}</strong></td><td></td></tr>`;
+    html += '</tbody></table>';
+
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ============================================================
+//  PAGE 3: EDITABLE TABLE
+// ============================================================
+function renderEditTable() {
+    const body = document.getElementById('editBody');
+    const docSelect = document.getElementById('filterDoctor');
+    const uniqueDocs = [...new Set(data.map(r => r.doctor))].sort();
+
+    // Populate filter dropdown
+    const currentVal = docSelect.value;
+    docSelect.innerHTML = '<option value="">Tous les medecins</option>';
+    uniqueDocs.forEach(d => docSelect.innerHTML += `<option value="${d}">${d}</option>`);
+    docSelect.value = currentVal;
+
+    let html = '';
+    data.forEach((row, idx) => {
+        html += `<tr data-idx="${idx}" data-doctor="${row.doctor}" data-cat="${row.cat}">
+            <td><strong>${row.doctor}</strong></td>
+            <td>${row.reglement}</td>
+            <td><span class="cat-tag tag-${row.cat.toLowerCase().replace('/','').substring(0,6)}">${row.acte}</span></td>
+            <td><input class="editable" type="text" value="${row.prixTTC.toFixed(2)}" onchange="editCell(${idx},'prixTTC',this.value)" /></td>
+            <td><input class="editable" type="text" value="${row.prixHT.toFixed(2)}" onchange="editCell(${idx},'prixHT',this.value)" /></td>
+            <td><input class="editable" type="text" value="${(row.taux*100).toFixed(0)}%" onchange="editCell(${idx},'taux',this.value)" style="width:60px" /></td>
+            <td><input class="editable" type="text" value="${row.partMed.toFixed(2)}" onchange="editCell(${idx},'partMed',this.value)" /></td>
+            <td><input class="editable" type="text" value="${row.partCentre.toFixed(2)}" onchange="editCell(${idx},'partCentre',this.value)" /></td>
+            <td><input class="editable" type="text" value="${row.notes}" onchange="editCell(${idx},'notes',this.value)" style="text-align:left;min-width:140px" /></td>
+            <td><button onclick="deleteRow(${idx})" style="background:none;border:none;cursor:pointer;color:var(--red-neg);font-size:14px" title="Supprimer">✕</button></td>
+        </tr>`;
+    });
+    body.innerHTML = html;
+}
+
+function editCell(idx, field, value) {
+    if (field === 'notes') {
+        data[idx][field] = value;
+    } else if (field === 'taux') {
+        data[idx][field] = parseFloat(value.replace('%','').replace(',','.')) / 100 || 0;
+    } else {
+        data[idx][field] = parseFloat(value.replace(',','.').replace(/[^0-9.\-]/g,'')) || 0;
+    }
+    saveData();
+    // Mark as edited
+    event.target.classList.add('edited');
+}
+
+function deleteRow(idx) {
+    if (confirm('Supprimer cette ligne ?')) {
+        data.splice(idx, 1);
+        saveData();
+        renderEditTable();
+    }
+}
+
+function addRow() {
+    data.push({ doctor:"Nouveau", reglement:"CB", acte:"Nouvel acte", prixTTC:0, prixHT:0, taux:0.30, partMed:0, partCentre:0, notes:"", cat:"Autre", type:"Autre" });
+    saveData();
+    renderEditTable();
+    // Scroll to bottom
+    const wrap = document.querySelector('.edit-table-wrap');
+    wrap.scrollTop = wrap.scrollHeight;
+}
+
+function resetData() {
+    if (confirm('Reinitialiser toutes les donnees aux valeurs d\'origine ?')) {
+        data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        saveData();
+        renderEditTable();
+    }
+}
+
+function filterData() {
+    const search = document.getElementById('searchBox').value.toLowerCase();
+    const docFilter = document.getElementById('filterDoctor').value;
+    const catFilter = document.getElementById('filterCat').value;
+    document.querySelectorAll('#editBody tr').forEach(tr => {
+        const doc = tr.dataset.doctor || '';
+        const cat = tr.dataset.cat || '';
+        const text = tr.textContent.toLowerCase();
+        const show = (!search || text.includes(search)) && (!docFilter || doc === docFilter) && (!catFilter || cat === catFilter);
+        tr.style.display = show ? '' : 'none';
+    });
+}
+
+function saveData() {
+    localStorage.setItem('maisonAbeilleData', JSON.stringify(data));
+    const ind = document.getElementById('saveIndicator');
+    ind.classList.add('show');
+    setTimeout(() => ind.classList.remove('show'), 2000);
+}
+
+// ============================================================
+//  EXPORT
+// ============================================================
+function exportCSV() {
+    let csv = 'Medecin;Reglement;Acte;Prix TTC;Prix HT;Taux;Part Medecin;Part Centre;Notes\n';
+    data.forEach(r => {
+        csv += `${r.doctor};${r.reglement};${r.acte};${r.prixTTC};${r.prixHT};${r.taux};${r.partMed};${r.partCentre};${r.notes}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Maison_Abeille_Janvier_2026.csv';
+    a.click();
+}
+
+// ============================================================
+//  CHARTS
+// ============================================================
+Chart.defaults.color = '#999';
+Chart.defaults.font.family = 'Inter';
+Chart.defaults.font.size = 11;
+
+const sc = ['#1B3A5C','#2E86DE','#E17055','#7C5CBF','#F0B429','#00B894','#E84393','#2C5F8A','#5B9BD5','#3A6B9F','#27AE60','#0F2847','#48C9B0','#8E44AD','#F39C12'];
+
+const caData = [
+    {n:'Dr Lellouch',v:85926.31},{n:'Dr Chrelias',v:71375.77},{n:'Dr Moreau',v:60751.46},
+    {n:'Dr Kitic',v:46319.18},{n:'Dr Kanelloupoulou',v:33489.80},{n:'Dr Ruiz',v:32842.12},
+    {n:'Dr Oubari',v:31435.31},{n:'Dr Auque',v:23143.93},{n:'Dr Litrico',v:20058.86},
+    {n:'Dr Dibiase',v:17037.15},{n:'Dr Hervieu',v:15476.28},{n:'Dr Azogui',v:14709.46},
+    {n:'Dr Berkane',v:9042.70},{n:'Dr Hadji',v:8614.50},{n:'Dr Charles',v:5732.64}
+];
+
+new Chart(document.getElementById('chartCA'), {
+    type:'bar',
+    data:{ labels:caData.map(d=>d.n), datasets:[{ data:caData.map(d=>d.v), backgroundColor:caData.map((_,i)=>sc[i]+'BB'), borderColor:caData.map((_,i)=>sc[i]), borderWidth:1, borderRadius:4, borderSkipped:false }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#2C2C2C', callbacks:{label:c=>' '+fmt(c.raw)} } }, scales:{ x:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:v=>fmt0(v)}}, y:{grid:{display:false}, ticks:{font:{weight:600,size:10},color:'#555'}} }, animation:{duration:1200} }
+});
+
+new Chart(document.getElementById('chartPie'), {
+    type:'doughnut',
+    data:{ labels:['Consultations','Cartographie','Etranger','Laser'], datasets:[{ data:[69006.30,34610.70,17000,3810], backgroundColor:['#3B8DD4CC','#8B6CC4CC','#D4A830CC','#D45A7ACC'], borderColor:'#fff', borderWidth:3, hoverOffset:8 }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'58%', plugins:{ legend:{position:'bottom',labels:{color:'#666'}}, tooltip:{ backgroundColor:'#2C2C2C', callbacks:{label:c=>' '+c.label+': '+fmt(c.raw)} } } }
+});
+
+const comp = [{n:'Azogui',ca:14709,r:7635},{n:'Hervieu',ca:15476,r:6978},{n:'Moreau',ca:60751,r:27925},{n:'Kanelloupoulou',ca:33490,r:4703},{n:'Lellouch',ca:85926,r:66417},{n:'Chrelias',ca:71376,r:27411},{n:'Kitic',ca:46319,r:13896},{n:'Ruiz',ca:32842,r:9838},{n:'Oubari',ca:31435,r:9431}];
+new Chart(document.getElementById('chartCompare'), {
+    type:'bar',
+    data:{ labels:comp.map(d=>'Dr '+d.n), datasets:[ {label:'CA Brut',data:comp.map(d=>d.ca),backgroundColor:'rgba(90,155,46,0.6)',borderColor:'#5A9B2E',borderWidth:1,borderRadius:3}, {label:'Retrocession',data:comp.map(d=>d.r),backgroundColor:'rgba(59,141,212,0.6)',borderColor:'#3B8DD4',borderWidth:1,borderRadius:3} ] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'top',labels:{color:'#666'}}, tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+fmt(c.raw)}} }, scales:{ x:{grid:{display:false},ticks:{font:{size:9},color:'#777'}}, y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{callback:v=>fmt0(v),color:'#999'}} } }
+});
+
+const rates = [{n:'Lellouch',r:77.3},{n:'Azogui',r:51.9},{n:'Moreau',r:46.0},{n:'Hervieu',r:45.1},{n:'Chrelias',r:38.4},{n:'Kitic',r:30},{n:'Auque',r:30},{n:'Ruiz',r:30},{n:'Oubari',r:30},{n:'Kanelloupoulou',r:14}];
+new Chart(document.getElementById('chartRate'), {
+    type:'bar',
+    data:{ labels:rates.map(r=>'Dr '+r.n), datasets:[{ data:rates.map(r=>r.r), backgroundColor:rates.map(r=> r.r>=50?'rgba(27,58,92,0.8)': r.r>=35?'rgba(46,134,222,0.7)':'rgba(91,155,213,0.6)'), borderRadius:4, borderSkipped:false }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>' '+c.raw.toFixed(1)+'%'}} }, scales:{ x:{grid:{display:false},ticks:{font:{size:9},color:'#777'}}, y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{callback:v=>v+'%',color:'#999'},max:100} } }
+});
+
+// ============================================================
+//  NEW CHARTS — Data from other spreadsheet tabs
+// ============================================================
+
+// Chart: Payment Methods (Donut)
+new Chart(document.getElementById('chartPayment'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Carte Bancaire (CB)', 'TP / TPMUT', 'Especes / Cheques'],
+        datasets: [{
+            data: [229245.92, 33515.25, 88576.50],
+            backgroundColor: ['#2E86DE', '#27AE60', '#E17055'],
+            borderWidth: 2,
+            borderColor: '#fff',
+            hoverOffset: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '55%',
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 16, font: { size: 11, weight: 600 } } },
+            tooltip: { callbacks: { label: c => ' ' + fmt(c.raw) + ' (' + (c.raw / 351528.47 * 100).toFixed(1) + '%)' } }
+        }
+    }
+});
+
+// Chart: Nombre d'actes par medecin (Bar)
+const actesData = [
+    { n: 'Dr Moreau', v: 703 },
+    { n: 'Dr Kanellopoulou', v: 237 },
+    { n: 'Dr Azogui', v: 207 },
+    { n: 'Dr Hervieu', v: 155 },
+    { n: 'Dr Assouline', v: 94 }
+];
+new Chart(document.getElementById('chartActes'), {
+    type: 'bar',
+    data: {
+        labels: actesData.map(d => d.n),
+        datasets: [{
+            label: 'Nombre d\'actes',
+            data: actesData.map(d => d.v),
+            backgroundColor: ['#1B3A5C', '#E84393', '#2E86DE', '#7C5CBF', '#F0B429'],
+            borderRadius: 6,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => ' ' + c.raw + ' actes' } }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { font: { weight: 600, size: 10 } } },
+            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#999' } }
+        }
+    }
+});
+
+// Chart: Daily Activity Timeline (Line)
+const timelineData = [
+    { d: '02/01', v: 9421.85 }, { d: '03/01', v: 6618.07 }, { d: '05/01', v: 2212.32 },
+    { d: '06/01', v: 3770.84 }, { d: '07/01', v: 2783.72 }, { d: '08/01', v: 5323.70 },
+    { d: '09/01', v: 4453.86 }, { d: '10/01', v: 4542.86 }, { d: '11/01', v: 1800.70 },
+    { d: '12/01', v: 4500.24 }, { d: '13/01', v: 3732.98 }, { d: '14/01', v: 7215.22 },
+    { d: '15/01', v: 4228.56 }, { d: '16/01', v: 4538.58 }, { d: '17/01', v: 5285.36 },
+    { d: '19/01', v: 3472.54 }, { d: '20/01', v: 5795.76 }, { d: '21/01', v: 1384.60 },
+    { d: '22/01', v: 3901.34 }, { d: '23/01', v: 3245.52 }, { d: '26/01', v: 5820.95 },
+    { d: '27/01', v: 9946.77 }, { d: '28/01', v: 9168.40 }, { d: '29/01', v: 3987.90 },
+    { d: '30/01', v: 7800.92 }
+];
+new Chart(document.getElementById('chartTimeline'), {
+    type: 'line',
+    data: {
+        labels: timelineData.map(d => d.d),
+        datasets: [{
+            label: 'CA brut / jour',
+            data: timelineData.map(d => d.v),
+            borderColor: '#1B3A5C',
+            backgroundColor: 'rgba(27,58,92,0.08)',
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#2E86DE',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => ' ' + fmt(c.raw) } }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#999', maxRotation: 45 } },
+            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => fmt0(v), color: '#999' } }
+        }
+    }
+});
+
+// Chart: Top Consultation Types (Horizontal Bar)
+const consultTypes = [
+    { n: 'APC 60', v: 458, c: '#1B3A5C' },
+    { n: 'DERMO', v: 174, c: '#2E86DE' },
+    { n: 'MED GEN 50', v: 140, c: '#5B9BD5' },
+    { n: 'APC 72', v: 80, c: '#7C5CBF' },
+    { n: 'Consultation Etranger', v: 76, c: '#E17055' },
+    { n: 'ALQP003', v: 62, c: '#F0B429' },
+    { n: 'Cartographie DERMO', v: 50, c: '#00B894' },
+    { n: 'DERMO 87', v: 22, c: '#E84393' },
+    { n: 'LASER', v: 20, c: '#48C9B0' },
+    { n: 'APC 92', v: 20, c: '#3A6B9F' }
+];
+new Chart(document.getElementById('chartConsultTypes'), {
+    type: 'bar',
+    data: {
+        labels: consultTypes.map(d => d.n),
+        datasets: [{
+            data: consultTypes.map(d => d.v),
+            backgroundColor: consultTypes.map(d => d.c + 'CC'),
+            borderColor: consultTypes.map(d => d.c),
+            borderWidth: 1,
+            borderRadius: 4,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => ' ' + c.raw + ' actes' } }
+        },
+        scales: {
+            x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#999' } },
+            y: { grid: { display: false }, ticks: { font: { weight: 600, size: 10 }, color: '#555' } }
+        }
+    }
+});
+
+// Chart: Consolidated Revenue Sources (Stacked Bar)
+new Chart(document.getElementById('chartConsolidated'), {
+    type: 'bar',
+    data: {
+        labels: ['Chirurgiens\n(11 medecins)', 'Dermato MG\n(Remplacants)', 'Dr Kanellopoulou\n(Dermatologue)', 'Dr Assouline\n(Propre)', 'LASER\n(Centre)'],
+        datasets: [
+            {
+                label: 'Part Centre',
+                data: [199448.52, 54612.27, 20999.44, 7992.99, 5062.00],
+                backgroundColor: '#1B3A5CCC',
+                borderRadius: 4
+            },
+            {
+                label: 'Part Medecins',
+                data: [152079.95, 49118.57, 12490.36, 4800.65, 0],
+                backgroundColor: '#2E86DECC',
+                borderRadius: 4
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top', labels: { font: { size: 11, weight: 600 }, padding: 16 } },
+            tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + fmt(c.raw) } }
+        },
+        scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 600, size: 10 }, color: '#555' } },
+            y: { stacked: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => fmt0(v), color: '#999' } }
+        }
+    }
+});
+
+// Progress bar animation
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.querySelectorAll('.kpi-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+        });
+    }, 400);
+});
+
+// Keyboard shortcut to close modal
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ============================================================
+//  PAGE 4: STATUT / TARIFS — INTERACTIVE PRICING GRID
+// ============================================================
+const STATUT_DATA = [
+  // {acte, ccam, ttc, ht, taux, tp, tpmut, retroTP, retroTPMUT, centre, med, produit, separator}
+  {acte:'Consultation APC 100',ccam:'APC',ttc:100,ht:100,taux:0.30,tp:42,tpmut:60,retroTP:28,retroTPMUT:10,centre:50,med:50,produit:0},
+  {acte:'Consultation APC 60',ccam:'APC',ttc:60,ht:60,taux:0.30,tp:42,tpmut:60,retroTP:0,retroTPMUT:-16.95,centre:30,med:30,produit:0},
+  {acte:'Consultation Chir 100',ccam:'CS',ttc:100,ht:100,taux:0.30,tp:22.05,tpmut:26.50,retroTP:47.95,retroTPMUT:43.50,centre:50,med:50,produit:0},
+  {acte:'Consultation Chir 31,50',ccam:'CS, MCS',ttc:31.50,ht:31.50,taux:0.30,tp:22.05,tpmut:31.50,retroTP:0,retroTPMUT:-9.45,centre:15.75,med:15.75,produit:0},
+  {acte:'Consultation Med. Esthetique',ccam:'—',ttc:100,ht:83.33,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:50,med:50,produit:16.67},
+  {acte:'Chir Dermato KYSTE FACE',ccam:'QAMA002',ttc:550,ht:550,taux:0.30,tp:219.30,tpmut:256.63,retroTP:0,retroTPMUT:0,centre:275,med:275,produit:0},
+  {acte:'Chir Dermato KYSTE CORPS',ccam:'QZMA001',ttc:550,ht:550,taux:0.30,tp:187.30,tpmut:224.80,retroTP:0,retroTPMUT:0,centre:275,med:275,produit:0},
+  {acte:'Chir Dermato LESION CORPS',ccam:'QZMA001',ttc:550,ht:550,taux:0.30,tp:179.17,tpmut:216.67,retroTP:0,retroTPMUT:0,centre:275,med:275,produit:0},
+  {acte:'Chir Dermato LESION FACE',ccam:'QAMA002',ttc:550,ht:550,taux:0.30,tp:209.64,tpmut:250.64,retroTP:0,retroTPMUT:0,centre:275,med:275,produit:0},
+  {acte:'Ablation des fils 31,50',ccam:'CS',ttc:31.50,ht:31.50,taux:0.30,tp:22.05,tpmut:31.50,retroTP:7.95,retroTPMUT:7.00,centre:30,med:30,produit:0},
+  {acte:'Biopsie',ccam:'—',ttc:250,ht:250,taux:0.30,tp:48.16,tpmut:68.80,retroTP:0,retroTPMUT:0,centre:125,med:125,produit:0},
+  {acte:"Suture d'urgence",ccam:'—',ttc:520,ht:520,taux:0.30,tp:16.51,tpmut:23.59,retroTP:0,retroTPMUT:0,centre:260,med:260,produit:0},
+  {acte:'Panari',ccam:'MJPA010',ttc:480,ht:480,taux:0.30,tp:21.69,tpmut:30.99,retroTP:0,retroTPMUT:0,centre:240,med:240,produit:0},
+  {acte:'Drainage',ccam:'—',ttc:400,ht:400,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:85,med:85,produit:0},
+  {acte:'Meso cheveux',ccam:'—',ttc:250,ht:208.33,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:135,med:115,produit:41.67},
+  {separator:'MESO / KENACORT'},
+  {acte:'Meso cheveux Kenacort 100%',ccam:'QZLB002',ttc:62.70,ht:52.25,taux:0.30,tp:43.89,tpmut:62.70,retroTP:-12.54,retroTPMUT:-31.35,centre:41.35,med:21.35,produit:10.45},
+  {acte:'Kenacort 300%',ccam:'QZLB002',ttc:188.10,ht:188.10,taux:0.30,tp:43.89,tpmut:62.70,retroTP:56.76,retroTPMUT:37.95,centre:94.05,med:94.05,produit:0},
+  {acte:'Kenacort 200%',ccam:'QZLB002',ttc:125.40,ht:125.40,taux:0.30,tp:43.89,tpmut:62.70,retroTP:-12.54,retroTPMUT:-31.35,centre:62.70,med:62.70,produit:0},
+  {acte:'Kenacort 100%',ccam:'QZLB002',ttc:62.70,ht:62.70,taux:0.30,tp:43.89,tpmut:62.70,retroTP:-12.54,retroTPMUT:-31.35,centre:31.35,med:31.35,produit:0},
+  {separator:'TVA — INJECTIONS & LASER'},
+  {acte:'Botox',ccam:'—',ttc:500,ht:416.67,taux:0.50,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:255.32,med:161.34,produit:93.98},
+  {acte:'Botox BRUXISME',ccam:'—',ttc:500,ht:416.67,taux:0.50,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:255.32,med:161.34,produit:93.98},
+  {acte:'Botox TRANSPIRATION / 2 FLACONS',ccam:'—',ttc:650,ht:541.67,taux:0.50,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:364.81,med:176.85,produit:187.96},
+  {acte:'Botox SOURIRE GINGIVAL',ccam:'—',ttc:600,ht:500,taux:0.50,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:296.99,med:203.01,produit:93.98},
+  {acte:'Botox LIFTING',ccam:'—',ttc:650,ht:541.67,taux:0.50,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:317.82,med:223.84,produit:93.98},
+  {acte:'AH (Acide Hyaluronique)',ccam:'—',ttc:400,ht:333.33,taux:0.50,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:258.33,med:125.58,produit:82.18},
+  {acte:'LASER',ccam:'—',ttc:150,ht:125,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:105,med:45,produit:25},
+  {separator:'CHIRURGIES'},
+  {acte:'Chir lobes oreilles 1 OREILLE',ccam:'CAMA022',ttc:650,ht:650,taux:0.30,tp:175.56,tpmut:250.80,retroTP:0,retroTPMUT:0,centre:325,med:325,produit:0},
+  {acte:'Chir lobes oreilles 2 OREILLES',ccam:'CAMA022',ttc:950,ht:950,taux:0.30,tp:175.56,tpmut:250.80,retroTP:0,retroTPMUT:0,centre:475,med:475,produit:0},
+  {acte:'GRATUIT',ccam:'—',ttc:0,ht:0,taux:0,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'CHIRURGIE EXTERNE',ccam:'—',ttc:5000,ht:4166.67,taux:0.80,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:1000,med:4000,produit:833.33},
+  {separator:'AUTRES ACTES & PROCEDURES'},
+  {acte:'TELECONSULTATION',ccam:'—',ttc:100,ht:100,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:30,med:70,produit:0},
+  {acte:'Meso cheveux + Elixir MD',ccam:'—',ttc:350,ht:291.67,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:220,med:110,produit:58.33},
+  {acte:'Elixir MD',ccam:'—',ttc:80,ht:66.67,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:80,med:0,produit:13.33},
+  {acte:'AIR DOCTOR',ccam:'—',ttc:0,ht:0,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'DRAINAGE QZJA011',ccam:'—',ttc:45.11,ht:45.11,taux:0.30,tp:31.58,tpmut:45.11,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'HIFU',ccam:'—',ttc:600,ht:0,taux:0.10,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:420,med:180,produit:0},
+  {acte:'PRX T33',ccam:'—',ttc:250,ht:0,taux:0.10,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:115,med:115,produit:0},
+  {acte:'PANSEMENT QZJA012',ccam:'—',ttc:54.84,ht:0,taux:0.30,tp:37.86,tpmut:54.84,retroTP:0,retroTPMUT:0,centre:115,med:115,produit:0},
+  {acte:'PRX T33 + Elixir MD',ccam:'—',ttc:330,ht:0,taux:0.10,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'Molluscum',ccam:'—',ttc:350,ht:0,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:175,med:175,produit:0},
+  {acte:'Teleconsultation 31,50',ccam:'CS, MCS',ttc:31.50,ht:31.50,taux:0.30,tp:22.05,tpmut:31.50,retroTP:0,retroTPMUT:-9.45,centre:15.75,med:15.75,produit:0},
+  {acte:"Suture urgence etranger",ccam:'—',ttc:1280,ht:0,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'Consultation etranger',ccam:'—',ttc:250,ht:0,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'Microneedling',ccam:'—',ttc:330,ht:0,taux:0.10,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'GAMA012',ccam:'—',ttc:400,ht:0,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'TC 23',ccam:'—',ttc:23,ht:0,taux:0.30,tp:0,tpmut:23,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'Chirurgie etranger',ccam:'—',ttc:1080,ht:0,taux:0.30,tp:0,tpmut:0,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0},
+  {acte:'Consultation APC - JF',ccam:'—',ttc:79.06,ht:0,taux:0.30,tp:55.34,tpmut:79.06,retroTP:0,retroTPMUT:0,centre:0,med:0,produit:0}
+];
+
+// Load from localStorage or use defaults
+let statutData = JSON.parse(localStorage.getItem('statutData') || 'null') || JSON.parse(JSON.stringify(STATUT_DATA));
+
+const sepColors = {'MESO / KENACORT':'#091C35','TVA — INJECTIONS & LASER':'#7C5CBF','CHIRURGIES':'#E17055','AUTRES ACTES & PROCEDURES':'#1B3A5C'};
+
+function fmtS(v) {
+    if (!v && v !== 0) return '—';
+    return v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' \u20AC';
+}
+
+function renderStatut() {
+    const tbody = document.getElementById('statutBody');
+    if (!tbody) return;
+    const search = (document.getElementById('statutSearch')?.value || '').toLowerCase();
+    let html = '';
+    let count = 0;
+    statutData.forEach((row, i) => {
+        if (row.separator) {
+            const col = sepColors[row.separator] || '#1B3A5C';
+            html += '<tr><td colspan="13" style="background:'+col+';color:white;font-weight:700;padding:8px 16px;font-size:0.78rem;letter-spacing:1px;">'+row.separator+'</td></tr>';
+            return;
+        }
+        if (search && !row.acte.toLowerCase().includes(search) && !(row.ccam||'').toLowerCase().includes(search)) return;
+        count++;
+        const neg = v => v < 0 ? ' neg' : (v > 0 ? ' pos' : '');
+        const isNew = row._new ? 'background:rgba(46,134,222,0.06);' : '';
+        html += '<tr style="'+isNew+'">';
+        html += '<td><strong>'+row.acte+'</strong></td>';
+        html += '<td style="font-size:0.75rem;color:var(--text-light);">'+row.ccam+'</td>';
+        html += '<td class="amt">'+fmtS(row.ttc)+'</td>';
+        html += '<td class="amt">'+(row.ht ? fmtS(row.ht) : '—')+'</td>';
+        html += '<td><span class="rate-badge">'+(row.taux*100).toFixed(0)+'%</span></td>';
+        html += '<td class="amt">'+(row.tp ? fmtS(row.tp) : '—')+'</td>';
+        html += '<td class="amt">'+(row.tpmut ? fmtS(row.tpmut) : '—')+'</td>';
+        html += '<td class="amt'+neg(row.retroTP)+'">'+(row.retroTP ? fmtS(row.retroTP) : '—')+'</td>';
+        html += '<td class="amt'+neg(row.retroTPMUT)+'">'+(row.retroTPMUT ? fmtS(row.retroTPMUT) : '—')+'</td>';
+        html += '<td class="amt">'+(row.centre ? fmtS(row.centre) : '—')+'</td>';
+        html += '<td class="amt pos">'+(row.med ? fmtS(row.med) : '—')+'</td>';
+        html += '<td class="amt">'+(row.produit ? fmtS(row.produit) : '—')+'</td>';
+        html += '<td><span onclick="deleteStatutRow('+i+')" style="color:var(--red-neg);cursor:pointer;font-weight:700;">&times;</span></td>';
+        html += '</tr>';
+    });
+    tbody.innerHTML = html;
+    const rc = document.getElementById('statutRowCount');
+    if (rc) rc.textContent = count;
+}
+
+function filterStatut() { renderStatut(); }
+
+function autoCalcStatut() {
+    const ttc = parseFloat(document.getElementById('st_ttc')?.value) || 0;
+    const taux = parseFloat(document.getElementById('st_taux')?.value) || 0.30;
+    const tp = parseFloat(document.getElementById('st_tp')?.value) || 0;
+    const tpmut = parseFloat(document.getElementById('st_tpmut')?.value) || 0;
+    const hasTVA = document.getElementById('st_tva')?.value === 'yes';
+    const prev = document.getElementById('statutPreview');
+    if (!ttc) { if (prev) prev.style.display = 'none'; return; }
+    if (prev) prev.style.display = 'block';
+    const ht = hasTVA ? +(ttc / 1.20).toFixed(2) : ttc;
+    const retroTP = tp ? +(ttc - tp - (ttc * taux)).toFixed(2) : 0;
+    const retroTPMUT = tpmut ? +(ttc - tpmut - (ttc * taux)).toFixed(2) : 0;
+    const centre = +(ttc * 0.5).toFixed(2);
+    const med = +(ttc - centre).toFixed(2);
+    document.getElementById('prevHT').innerHTML = 'Prix HT: <strong>'+fmtS(ht)+'</strong>';
+    document.getElementById('prevRetroTP').innerHTML = 'Retro si TP: <strong style="color:'+(retroTP<0?'var(--red-neg)':'var(--green-pos)')+'">'+fmtS(retroTP)+'</strong>';
+    document.getElementById('prevRetroTPMUT').innerHTML = 'Retro si TPMUT: <strong style="color:'+(retroTPMUT<0?'var(--red-neg)':'var(--green-pos)')+'">'+fmtS(retroTPMUT)+'</strong>';
+    document.getElementById('prevCentre').innerHTML = 'Centre: <strong>'+fmtS(centre)+'</strong>';
+    document.getElementById('prevMed').innerHTML = 'Medecin: <strong style="color:var(--green-pos)">'+fmtS(med)+'</strong>';
+}
+
+function addStatutRow() {
+    const acte = document.getElementById('st_acte')?.value?.trim();
+    const ttc = parseFloat(document.getElementById('st_ttc')?.value) || 0;
+    if (!acte || !ttc) { alert('Remplissez au moins Acte et Prix TTC'); return; }
+    const ccam = document.getElementById('st_ccam')?.value?.trim() || '—';
+    const taux = parseFloat(document.getElementById('st_taux')?.value) || 0.30;
+    const tp = parseFloat(document.getElementById('st_tp')?.value) || 0;
+    const tpmut = parseFloat(document.getElementById('st_tpmut')?.value) || 0;
+    const produit = parseFloat(document.getElementById('st_produit')?.value) || 0;
+    const hasTVA = document.getElementById('st_tva')?.value === 'yes';
+    const ht = hasTVA ? +(ttc / 1.20).toFixed(2) : ttc;
+    const retroTP = tp ? +(ttc - tp - (ttc * taux)).toFixed(2) : 0;
+    const retroTPMUT = tpmut ? +(ttc - tpmut - (ttc * taux)).toFixed(2) : 0;
+    const centre = +(ttc * 0.5).toFixed(2);
+    const med = +(ttc - centre).toFixed(2);
+    statutData.push({acte, ccam, ttc, ht, taux, tp, tpmut, retroTP, retroTPMUT, centre, med, produit, _new: true});
+    localStorage.setItem('statutData', JSON.stringify(statutData));
+    renderStatut();
+    // Reset form
+    ['st_acte','st_ccam','st_ttc','st_tp','st_tpmut','st_produit'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('statutPreview').style.display = 'none';
+    showSaveIndicator();
+}
+
+function deleteStatutRow(idx) {
+    if (statutData[idx]?.separator) return;
+    statutData.splice(idx, 1);
+    localStorage.setItem('statutData', JSON.stringify(statutData));
+    renderStatut();
+    showSaveIndicator();
+}
+
+function showSaveIndicator() {
+    const si = document.getElementById('saveIndicator');
+    if (si) { si.classList.add('show'); setTimeout(() => si.classList.remove('show'), 2000); }
+}
+
+// Render on page load
+renderStatut();
+
+// ============================================================
+//  PASSWORD GATE FOR STATUT TAB
+// ============================================================
+const STATUT_PASSWORD = 'abeille2026';
+
+function promptStatutPassword() {
+    const pw = prompt('Mot de passe pour accéder à Statut / Tarifs :');
+    if (pw === STATUT_PASSWORD) {
+        document.getElementById('statutTabBtn').style.display = '';
+        sessionStorage.setItem('statutUnlocked', 'true');
+        alert('✓ Onglet Statut / Tarifs déverrouillé !');
+    } else if (pw !== null) {
+        alert('✗ Mot de passe incorrect.');
+    }
+}
+
+// Restore unlock state from session
+if (sessionStorage.getItem('statutUnlocked') === 'true') {
+    const stBtn = document.getElementById('statutTabBtn');
+    if (stBtn) stBtn.style.display = '';
+}
+
+// ============================================================
+//  EDITABLE DASHBOARD TABLES — Data Arrays
+// ============================================================
+const TABLE_CONFIGS = {
+    ventilation: {
+        bodyId: 'bodyVentilation',
+        storageKey: 'table_ventilation',
+        columns: ['doctor','caTotal','cb','tpTpmut','especes'],
+        colTypes: ['text','amount','amount','amount','amount'],
+        hasTotal: true,
+        totalLabel: 'TOTAL',
+        avatarColors: {
+            'Dr Lellouch':'var(--sage)','Dr Chrelias':'var(--accent-teal)','Dr Kitic':'var(--accent-blue)',
+            'Dr Ruiz':'var(--red-neg)','Dr Oubari':'var(--sage-muted)','Dr Auque':'var(--green-pos)',
+            'Dr Litrico':'var(--sage-light)','Dr Dibiase':'var(--accent-gold)','Dr Berkane':'var(--accent-purple)',
+            'Dr Hadji':'var(--accent-terracotta)','Dr Charles':'var(--accent-rose)'
+        },
+        defaultData: [
+            {doctor:'Dr Lellouch',caTotal:85926,cb:4625,tpTpmut:1201,especes:80100},
+            {doctor:'Dr Chrelias',caTotal:71376,cb:61940,tpTpmut:7517,especes:1820},
+            {doctor:'Dr Kitic',caTotal:46319,cb:39488,tpTpmut:6498,especes:334},
+            {doctor:'Dr Ruiz',caTotal:32842,cb:24576,tpTpmut:6198,especes:2218},
+            {doctor:'Dr Oubari',caTotal:31435,cb:28266,tpTpmut:2119,especes:1050},
+            {doctor:'Dr Auque',caTotal:23144,cb:20442,tpTpmut:1767,especes:710},
+            {doctor:'Dr Litrico',caTotal:20059,cb:15673,tpTpmut:3727,especes:640},
+            {doctor:'Dr Dibiase',caTotal:17037,cb:15147,tpTpmut:1890,especes:0},
+            {doctor:'Dr Berkane',caTotal:9043,cb:7606,tpTpmut:747,especes:690},
+            {doctor:'Dr Hadji',caTotal:8615,cb:6555,tpTpmut:1045,especes:1015},
+            {doctor:'Dr Charles',caTotal:5733,cb:4926,tpTpmut:807,especes:0}
+        ]
+    },
+    dermato: {
+        bodyId: 'bodyDermato',
+        storageKey: 'table_dermato',
+        columns: ['doctor','categorie','caBrut','taux','retrocession'],
+        colTypes: ['text','tag','amount','rate','amount'],
+        hasTotal: true,
+        hasGroupTotals: true,
+        totalLabel: 'TOTAL DERMATOLOGUES',
+        tagColors: {'Consultations':'tag-consult','Cartographie':'tag-carto','Etranger / Air Doctor':'tag-etranger','Laser':'tag-laser'},
+        avatarColors: {
+            'Dr Azogui':'var(--accent-blue)','Dr Hervieu':'var(--accent-purple)',
+            'Dr Moreau':'var(--accent-terracotta)','Dr Kanelloupoulou':'var(--accent-rose)'
+        },
+        defaultData: [
+            {doctor:'Dr Azogui',categorie:'Consultations',caBrut:10741.26,taux:0.60,retrocession:6444.76},
+            {doctor:'Dr Azogui',categorie:'Cartographie',caBrut:668.20,taux:0.30,retrocession:200.46},
+            {doctor:'Dr Azogui',categorie:'Etranger / Air Doctor',caBrut:3300.00,taux:0.30,retrocession:990.00},
+            {doctor:'Dr Hervieu',categorie:'Consultations',caBrut:7782.58,taux:0.60,retrocession:4669.55},
+            {doctor:'Dr Hervieu',categorie:'Cartographie',caBrut:3893.70,taux:0.30,retrocession:1168.11},
+            {doctor:'Dr Hervieu',categorie:'Laser',caBrut:550.00,taux:0.30,retrocession:165.00},
+            {doctor:'Dr Moreau',categorie:'Consultations',caBrut:38265.36,taux:0.60,retrocession:22959.22},
+            {doctor:'Dr Moreau',categorie:'Cartographie',caBrut:9256.10,taux:0.30,retrocession:2776.83},
+            {doctor:'Dr Moreau',categorie:'Etranger / Air Doctor',caBrut:10450.00,taux:0.30,retrocession:3135.00},
+            {doctor:'Dr Moreau',categorie:'Laser',caBrut:2780.00,taux:0.30,retrocession:834.00},
+            {doctor:'Dr Kanelloupoulou',categorie:'Consultations',caBrut:12217.10,taux:0.50,retrocession:6108.55},
+            {doctor:'Dr Kanelloupoulou',categorie:'Cartographie',caBrut:20792.70,taux:0.30,retrocession:6237.81}
+        ]
+    },
+    chirurgiens: {
+        bodyId: 'bodyChirurgiens',
+        storageKey: 'table_chirurgiens',
+        columns: ['doctor','type','caBrut','taux','retrocession'],
+        colTypes: ['text','tag','amount','rate','amount'],
+        hasTotal: true,
+        totalLabel: 'TOTAL CHIRURGIENS',
+        tagColors: {'Surgery/Consultation':'tag-surgery','Surgery + Injections':'tag-surgery','Injections (AH/Botox)':'tag-botox','Esthetique':'tag-esth','Chirurgie Externe':'tag-externe'},
+        avatarColors: {
+            'Dr Lellouch':'var(--sage)','Dr Chrelias':'var(--accent-teal)','Dr Auque':'var(--green-pos)',
+            'Dr Berkane':'var(--accent-purple)','Dr Charles':'var(--accent-rose)','Dr Dibiase':'var(--accent-gold)',
+            'Dr Hadji':'var(--accent-terracotta)','Dr Kitic':'var(--accent-blue)','Dr Litrico':'var(--sage-light)',
+            'Dr Oubari':'var(--sage-muted)','Dr Ruiz':'var(--red-neg)'
+        },
+        defaultData: [
+            {doctor:'Dr Lellouch',type:'Surgery/Consultation',caBrut:4976.31,taux:0.50,retrocession:2488.16},
+            {doctor:'Dr Lellouch',type:'Injections (AH/Botox)',caBrut:1100.00,taux:0.50,retrocession:223.36},
+            {doctor:'Dr Lellouch',type:'Esthetique',caBrut:350.00,taux:0.30,retrocession:105.00},
+            {doctor:'Dr Lellouch',type:'Chirurgie Externe',caBrut:79500.00,taux:0.80,retrocession:63600.00},
+            {doctor:'Dr Chrelias',type:'Surgery + Injections',caBrut:71375.77,taux:0.40,retrocession:27410.51},
+            {doctor:'Dr Auque',type:'Surgery/Consultation',caBrut:23143.93,taux:0.30,retrocession:6943.18},
+            {doctor:'Dr Berkane',type:'Surgery/Consultation',caBrut:9042.70,taux:0.30,retrocession:2712.81},
+            {doctor:'Dr Charles',type:'Surgery/Consultation',caBrut:5732.64,taux:0.30,retrocession:1719.79},
+            {doctor:'Dr Dibiase',type:'Surgery/Consultation',caBrut:17037.15,taux:0.30,retrocession:5111.15},
+            {doctor:'Dr Hadji',type:'Surgery/Consultation',caBrut:8614.50,taux:0.30,retrocession:2584.35},
+            {doctor:'Dr Kitic',type:'Surgery/Consultation',caBrut:46319.18,taux:0.30,retrocession:13895.75},
+            {doctor:'Dr Litrico',type:'Surgery/Consultation',caBrut:20058.86,taux:0.30,retrocession:6017.66},
+            {doctor:'Dr Oubari',type:'Surgery/Consultation',caBrut:31435.31,taux:0.30,retrocession:9430.59},
+            {doctor:'Dr Ruiz',type:'Surgery/Consultation',caBrut:32842.12,taux:0.30,retrocession:9837.64}
+        ]
+    },
+    assouline: {
+        bodyId: 'bodyAssouline',
+        storageKey: 'table_assouline',
+        columns: ['date','nbActes','caTTC','partMed','partCentre'],
+        colTypes: ['text','number','amount','amount','amount'],
+        hasTotal: true,
+        totalLabel: 'TOTAL Dr Assouline',
+        defaultData: [
+            {date:'02 janvier',nbActes:2,caTTC:700.00,partMed:210.00,partCentre:490.00},
+            {date:'05 janvier',nbActes:21,caTTC:2212.32,partMed:877.39,partCentre:1334.93},
+            {date:'07 janvier',nbActes:13,caTTC:2783.72,partMed:906.31,partCentre:1877.41},
+            {date:'09 janvier',nbActes:2,caTTC:94.12,partMed:56.47,partCentre:37.65},
+            {date:'11 janvier',nbActes:1,caTTC:334.10,partMed:100.23,partCentre:233.87},
+            {date:'12 janvier',nbActes:1,caTTC:334.10,partMed:100.23,partCentre:233.87},
+            {date:'13 janvier',nbActes:4,caTTC:178.22,partMed:106.93,partCentre:71.29},
+            {date:'14 janvier',nbActes:11,caTTC:1355.52,partMed:543.31,partCentre:812.21},
+            {date:'19 janvier',nbActes:8,caTTC:720.00,partMed:282.00,partCentre:438.00},
+            {date:'20 janvier',nbActes:1,caTTC:25.00,partMed:15.00,partCentre:10.00},
+            {date:'21 janvier',nbActes:11,caTTC:1384.60,partMed:580.53,partCentre:804.07},
+            {date:'23 janvier',nbActes:7,caTTC:2050.50,partMed:649.38,partCentre:1401.12},
+            {date:'27 janvier',nbActes:7,caTTC:312.32,partMed:187.39,partCentre:124.93},
+            {date:'28 janvier',nbActes:4,caTTC:240.00,partMed:144.00,partCentre:96.00},
+            {date:'30 janvier',nbActes:1,caTTC:69.12,partMed:41.47,partCentre:27.65}
+        ]
+    },
+    kanellopoulou: {
+        bodyId: 'bodyKanellopoulou',
+        storageKey: 'table_kanellopoulou',
+        columns: ['date','nbActes','caTTC','partMed','partCentre'],
+        colTypes: ['text','number','amount','amount','amount'],
+        hasTotal: true,
+        totalLabel: 'TOTAL Kanellopoulou',
+        defaultData: [
+            {date:'14 janvier',nbActes:52,caTTC:5859.70,partMed:2390.57,partCentre:3469.13},
+            {date:'15 janvier',nbActes:44,caTTC:5913.30,partMed:2220.09,partCentre:3693.21},
+            {date:'16 janvier',nbActes:52,caTTC:6347.30,partMed:2457.91,partCentre:3889.39},
+            {date:'17 janvier',nbActes:68,caTTC:9234.00,partMed:3485.52,partCentre:5748.48},
+            {date:'30 janvier',nbActes:21,caTTC:6135.50,partMed:1936.27,partCentre:4199.23}
+        ]
+    }
+};
+
+// Load data from localStorage or defaults
+const tableData = {};
+Object.keys(TABLE_CONFIGS).forEach(key => {
+    const cfg = TABLE_CONFIGS[key];
+    const saved = localStorage.getItem(cfg.storageKey);
+    tableData[key] = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(cfg.defaultData));
+});
+
+function saveTableData(key) {
+    localStorage.setItem(TABLE_CONFIGS[key].storageKey, JSON.stringify(tableData[key]));
+    showSaveIndicator();
+}
+
+// ============================================================
+//  GENERIC RENDER FUNCTION FOR EDITABLE TABLES
+// ============================================================
+function renderDashTable(key) {
+    const cfg = TABLE_CONFIGS[key];
+    const tbody = document.getElementById(cfg.bodyId);
+    if (!tbody) return;
+    const rows = tableData[key];
+    let html = '';
+
+    rows.forEach((row, idx) => {
+        html += '<tr>';
+        cfg.columns.forEach((col, ci) => {
+            const val = row[col];
+            const type = cfg.colTypes[ci];
+            if (type === 'text' && cfg.avatarColors) {
+                const initials = (val||'').replace('Dr ','').substring(0,2).toUpperCase();
+                const color = cfg.avatarColors[val] || 'var(--sage-muted)';
+                html += '<td><div class="doctor-name"><div class="doc-avatar" style="background:'+color+'">'+initials+'</div><span class="editable-cell" ondblclick="editDashCell(this,\''+key+'\','+idx+',\''+col+'\',\'text\')">'+val+'</span></div></td>';
+            } else if (type === 'tag') {
+                const tagClass = cfg.tagColors?.[val] || '';
+                html += '<td><span class="cat-tag '+tagClass+' editable-cell" ondblclick="editDashCell(this,\''+key+'\','+idx+',\''+col+'\',\'text\')">'+val+'</span></td>';
+            } else if (type === 'rate') {
+                html += '<td><span class="rate-badge editable-cell" ondblclick="editDashCell(this,\''+key+'\','+idx+',\''+col+'\',\'rate\')">'+(val*100).toFixed(0)+'%</span></td>';
+            } else if (type === 'amount') {
+                const cls = val > 0 && col.includes('retro') || col.includes('partMed') ? ' pos' : '';
+                html += '<td class="amt'+cls+'"><span class="editable-cell" ondblclick="editDashCell(this,\''+key+'\','+idx+',\''+col+'\',\'amount\')">'+fmtS(val)+'</span></td>';
+            } else if (type === 'number') {
+                html += '<td><span class="editable-cell" ondblclick="editDashCell(this,\''+key+'\','+idx+',\''+col+'\',\'number\')">'+val+'</span></td>';
+            } else {
+                html += '<td><span class="editable-cell" ondblclick="editDashCell(this,\''+key+'\','+idx+',\''+col+'\',\'text\')">'+val+'</span></td>';
+            }
+        });
+        html += '<td style="text-align:center;"><span onclick="deleteDashRow(\''+key+'\','+idx+')" style="color:var(--red-neg);cursor:pointer;font-weight:700;font-size:14px;" title="Supprimer">&#10005;</span></td>';
+        html += '</tr>';
+    });
+
+    // Total row
+    if (cfg.hasTotal) {
+        html += '<tr class="total-r">';
+        cfg.columns.forEach((col, ci) => {
+            const type = cfg.colTypes[ci];
+            if (ci === 0) {
+                html += '<td><strong>'+cfg.totalLabel+'</strong></td>';
+            } else if (type === 'amount') {
+                const total = rows.reduce((s, r) => s + (r[col] || 0), 0);
+                const cls = col.includes('retro') || col.includes('partMed') ? ' pos' : '';
+                html += '<td class="amt'+cls+'"><strong>'+fmtS(total)+'</strong></td>';
+            } else if (type === 'number') {
+                const total = rows.reduce((s, r) => s + (r[col] || 0), 0);
+                html += '<td><strong>'+total+'</strong></td>';
+            } else if (type === 'rate') {
+                html += '<td></td>';
+            } else {
+                html += '<td></td>';
+            }
+        });
+        html += '<td></td></tr>';
+    }
+
+    tbody.innerHTML = html;
+}
+
+// ============================================================
+//  INLINE EDIT ON DOUBLE-CLICK
+// ============================================================
+function editDashCell(el, tableKey, rowIdx, colKey, type) {
+    if (el.querySelector('input')) return; // already editing
+    const currentVal = tableData[tableKey][rowIdx][colKey];
+    let inputVal;
+    if (type === 'rate') inputVal = (currentVal * 100).toFixed(0);
+    else if (type === 'amount') inputVal = currentVal.toFixed(2);
+    else inputVal = currentVal;
+
+    const input = document.createElement('input');
+    input.type = (type === 'amount' || type === 'number' || type === 'rate') ? 'number' : 'text';
+    input.value = inputVal;
+    input.step = type === 'amount' ? '0.01' : (type === 'rate' ? '1' : '1');
+    input.style.cssText = 'width:100%;padding:4px 6px;border:2px solid var(--accent-blue);border-radius:4px;font-size:inherit;font-family:inherit;background:#fff;outline:none;';
+
+    el.innerHTML = '';
+    el.appendChild(input);
+    input.focus();
+    input.select();
+
+    const save = () => {
+        let newVal;
+        if (type === 'rate') newVal = parseFloat(input.value) / 100 || 0;
+        else if (type === 'amount' || type === 'number') newVal = parseFloat(input.value) || 0;
+        else newVal = input.value;
+        tableData[tableKey][rowIdx][colKey] = newVal;
+        saveTableData(tableKey);
+        renderDashTable(tableKey);
+    };
+
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { save(); }
+        if (e.key === 'Escape') { renderDashTable(tableKey); }
+    });
+}
+
+// ============================================================
+//  ADD / DELETE ROWS
+// ============================================================
+function addTableRow(tableKey) {
+    const cfg = TABLE_CONFIGS[tableKey];
+    const newRow = {};
+    cfg.columns.forEach((col, ci) => {
+        const type = cfg.colTypes[ci];
+        if (type === 'text' || type === 'tag') newRow[col] = 'Nouveau';
+        else if (type === 'rate') newRow[col] = 0.30;
+        else newRow[col] = 0;
+    });
+    tableData[tableKey].push(newRow);
+    saveTableData(tableKey);
+    renderDashTable(tableKey);
+}
+
+function deleteDashRow(tableKey, idx) {
+    if (confirm('Supprimer cette ligne ?')) {
+        tableData[tableKey].splice(idx, 1);
+        saveTableData(tableKey);
+        renderDashTable(tableKey);
+    }
+}
+
+function resetDashTable(tableKey) {
+    const cfg = TABLE_CONFIGS[tableKey];
+    tableData[tableKey] = JSON.parse(JSON.stringify(cfg.defaultData));
+    saveTableData(tableKey);
+    renderDashTable(tableKey);
+}
+
+// ============================================================
+//  RENDER ALL DASHBOARD TABLES ON LOAD
+// ============================================================
+Object.keys(TABLE_CONFIGS).forEach(key => renderDashTable(key));
+</script>
+</body>
+</html>
