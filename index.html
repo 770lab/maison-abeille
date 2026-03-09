@@ -1257,21 +1257,69 @@
     <div class="table-card" style="margin-bottom:20px;border-left:4px solid var(--accent-blue);">
         <div class="table-card-header"><h3>Ameliorations possibles</h3></div>
         <div style="padding:20px 24px;font-size:13px;line-height:1.8;color:var(--text-primary);">
-            <table class="detail-table" style="margin-bottom:0;">
-                <thead><tr><th>Idee</th><th>Description</th></tr></thead>
+
+            <h4 style="margin:0 0 12px 0;color:var(--accent-gold);font-size:14px;letter-spacing:0.5px;">DONNEES ET SYNCHRONISATION</h4>
+            <table class="detail-table" style="margin-bottom:24px;">
+                <thead><tr><th style="width:30%">Idee</th><th>Description</th><th style="width:15%">Priorite</th></tr></thead>
                 <tbody>
-                    <tr><td><strong>Connexion Google Sheets</strong></td><td>Lire les donnees directement depuis le tableur Google Sheets pour eviter de les recopier manuellement. Le dashboard se mettrait a jour automatiquement.</td></tr>
-                    <tr><td><strong>Multi-mois</strong></td><td>Ajouter un selecteur de mois pour comparer les donnees d'un mois a l'autre. Graphiques d'evolution sur plusieurs mois.</td></tr>
-                    <tr><td><strong>Ajouter une nouvelle operation</strong></td><td>Formulaire complet pour saisir une nouvelle operation : medecin, type d'acte, montant, moyen de paiement. Le dashboard recalculerait tous les totaux automatiquement.</td></tr>
-                    <tr><td><strong>Alertes et seuils</strong></td><td>Notifications visuelles quand un medecin depasse un seuil de CA, ou quand un taux de retrocession est anormal.</td></tr>
-                    <tr><td><strong>Export PDF</strong></td><td>Generer un rapport PDF formate avec tous les tableaux et graphiques du mois, pret a envoyer.</td></tr>
-                    <tr><td><strong>Historique des modifications</strong></td><td>Garder un journal de toutes les modifications faites dans les tableaux, avec date et valeur precedente.</td></tr>
-                    <tr><td><strong>Graphiques interactifs</strong></td><td>Cliquer sur un medecin dans un graphique pour voir directement sa fiche detaillee.</td></tr>
-                    <tr><td><strong>Mode sombre</strong></td><td>Theme sombre alternatif pour un usage le soir ou en preference utilisateur.</td></tr>
-                    <tr><td><strong>Gestion des utilisateurs</strong></td><td>Differents niveaux d'acces : lecture seule pour les medecins, edition pour la comptabilite, administration pour les tarifs.</td></tr>
-                    <tr><td><strong>Synchronisation cloud</strong></td><td>Sauvegarder les donnees sur un serveur au lieu du localStorage, pour partager entre plusieurs appareils.</td></tr>
+                    <tr><td><strong>Connexion Google Sheets en temps reel</strong></td><td>Lire les donnees directement depuis le tableur Google Sheets via export CSV. Le dashboard se met a jour automatiquement a chaque ouverture — plus besoin de recopier quoi que ce soit.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Multi-mois / Multi-annees</strong></td><td>Selecteur de periode (mois, trimestre, annee) pour comparer les performances dans le temps. Graphiques d'evolution CA, retrocessions, et volume d'actes sur 6/12 mois.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Synchronisation cloud</strong></td><td>Sauvegarder les donnees sur un serveur (Firebase, Supabase) au lieu du localStorage. Permet le partage entre plusieurs appareils et utilisateurs en temps reel.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Historique des modifications</strong></td><td>Journal automatique de toutes les modifications : date, utilisateur, ancienne valeur, nouvelle valeur. Permet de retracer chaque changement et de revenir en arriere si necessaire.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Import/Export de donnees</strong></td><td>Importer des donnees depuis un fichier CSV ou Excel. Exporter les donnees du dashboard dans differents formats (CSV, Excel, JSON).</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
                 </tbody>
             </table>
+
+            <h4 style="margin:0 0 12px 0;color:var(--accent-gold);font-size:14px;letter-spacing:0.5px;">VISUALISATION ET GRAPHIQUES</h4>
+            <table class="detail-table" style="margin-bottom:24px;">
+                <thead><tr><th style="width:30%">Idee</th><th>Description</th><th style="width:15%">Priorite</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Graphique radar par medecin</strong></td><td>Vue en radar (toile d'araignee) montrant la repartition de l'activite de chaque medecin : consultations, cartographie, laser, etranger. Permet de visualiser le profil d'activite en un coup d'oeil.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Classement interactif des medecins</strong></td><td>Classement dynamique par CA brut, part centre, ou volume d'actes. Cliquer sur un medecin pour voir sa fiche detaillee avec tous ses chiffres.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Indicateurs de tendance</strong></td><td>Fleches haut/bas a cote de chaque KPI pour montrer l'evolution par rapport au mois precedent (+12%, -5%). Vert si amelioration, rouge si baisse.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Barres de progression / Objectifs</strong></td><td>Definir des objectifs mensuels par medecin ou global. Barre de progression visuelle pour suivre l'atteinte des objectifs en temps reel.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Graphiques interactifs avec drill-down</strong></td><td>Cliquer sur un segment de graphique pour zoomer sur les details : par exemple, cliquer sur "Cartographie" dans le camembert pour voir la ventilation par medecin.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Heatmap d'activite</strong></td><td>Carte thermique montrant les jours/semaines de forte et faible activite. Utile pour identifier les periodes creuses et optimiser la planification.</td><td style="color:#2196F3;font-weight:600;">Basse</td></tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin:0 0 12px 0;color:var(--accent-gold);font-size:14px;letter-spacing:0.5px;">EXPERIENCE UTILISATEUR</h4>
+            <table class="detail-table" style="margin-bottom:24px;">
+                <thead><tr><th style="width:30%">Idee</th><th>Description</th><th style="width:15%">Priorite</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Mode sombre / clair</strong></td><td>Bouton toggle pour basculer entre theme sombre (actuel) et theme clair. Respecte aussi la preference systeme de l'utilisateur (prefers-color-scheme).</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Swipe entre onglets (mobile)</strong></td><td>Geste de balayage gauche/droite pour naviguer entre les onglets sur telephone. Plus naturel et rapide que de toucher les boutons.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Recherche et filtres rapides</strong></td><td>Barre de recherche globale pour trouver un medecin, un acte, un montant. Filtres par type d'acte, par medecin, par moyen de paiement.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Animations de transition</strong></td><td>Transitions fluides entre les pages et les elements. Animations d'apparition des cartes KPI et des graphiques pour une experience plus premium.</td><td style="color:#2196F3;font-weight:600;">Basse</td></tr>
+                    <tr><td><strong>Raccourcis clavier</strong></td><td>Navigation rapide au clavier : fleches pour changer d'onglet, Echap pour verrouiller, / pour chercher. Utile pour une utilisation sur ordinateur.</td><td style="color:#2196F3;font-weight:600;">Basse</td></tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin:0 0 12px 0;color:var(--accent-gold);font-size:14px;letter-spacing:0.5px;">FONCTIONNALITES METIER</h4>
+            <table class="detail-table" style="margin-bottom:24px;">
+                <thead><tr><th style="width:30%">Idee</th><th>Description</th><th style="width:15%">Priorite</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Saisie d'operations</strong></td><td>Formulaire complet pour ajouter une operation : medecin, type d'acte, montant, moyen de paiement. Tous les totaux, KPIs et graphiques se recalculent automatiquement.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Export PDF par medecin</strong></td><td>Generer un rapport PDF individuel par medecin avec ses chiffres, graphiques et retrocessions du mois. Pret a envoyer par email ou a imprimer.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Alertes et seuils</strong></td><td>Notifications visuelles configurables : seuil de CA depasse, taux de retrocession anormal, paiement en attente depuis trop longtemps. Badges sur l'onglet concerne.</td><td style="color:#4CAF50;font-weight:600;">Haute</td></tr>
+                    <tr><td><strong>Suivi des paiements</strong></td><td>Statut de chaque retrocession : "a payer", "en cours", "paye", "fait". Vue d'ensemble des paiements en attente avec dates d'echeance.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Calcul automatique des charges</strong></td><td>Integration des charges fixes (loyer, materiel, assurances) et variables (consommables) pour calculer le benefice net reel du centre apres retrocessions.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Simulation de scenarios</strong></td><td>Simuler l'impact d'un changement de taux de retrocession, d'un nouveau medecin, ou d'une hausse de tarifs. Voir en temps reel l'effet sur le CA et la marge du centre.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin:0 0 12px 0;color:var(--accent-gold);font-size:14px;letter-spacing:0.5px;">SECURITE ET GESTION</h4>
+            <table class="detail-table" style="margin-bottom:0;">
+                <thead><tr><th style="width:30%">Idee</th><th>Description</th><th style="width:15%">Priorite</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Gestion des utilisateurs et roles</strong></td><td>Niveaux d'acces differencies : medecins (voient uniquement leurs propres chiffres), comptabilite (edition), direction (acces complet + tarifs). Connexion par email/mot de passe.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Partage de rapport par lien</strong></td><td>Generer un lien temporaire pour partager un rapport. Option de partage sans montants (graphiques et pourcentages uniquement) ou avec montants selon le niveau d'acces.</td><td style="color:#FF9800;font-weight:600;">Moyenne</td></tr>
+                    <tr><td><strong>Audit trail complet</strong></td><td>Tracer qui a consulte quoi et quand. Utile pour la conformite et en cas de litige. Export du journal d'audit en CSV.</td><td style="color:#2196F3;font-weight:600;">Basse</td></tr>
+                    <tr><td><strong>Chiffrement des donnees sensibles</strong></td><td>Chiffrer les montants stockes en localStorage avec une cle derivee du mot de passe utilisateur. Meme si quelqu'un accede au navigateur, les donnees restent illisibles.</td><td style="color:#2196F3;font-weight:600;">Basse</td></tr>
+                    <tr><td><strong>Sauvegarde automatique</strong></td><td>Backup quotidien automatique des donnees vers Google Drive ou un stockage cloud. Restauration en un clic en cas de probleme.</td><td style="color:#2196F3;font-weight:600;">Basse</td></tr>
+                </tbody>
+            </table>
+
         </div>
     </div>
 </div>
